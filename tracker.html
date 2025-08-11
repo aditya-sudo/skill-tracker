@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Skill Preparation Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #38332F;
+        }
+       .progress-bar-bg {
+            background-color: #EAE5E0;
+        }
+       .progress-bar-fill {
+            background-color: #5A8B72;
+            transition: width 0.5s ease-in-out;
+        }
+       .accordion-header {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+       .accordion-header:hover {
+            background-color: #F9F6F2;
+        }
+       .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+        }
+       .status-select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236F6964%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            background-position: right 0.7rem center;
+            background-size: 0.65rem auto;
+        }
+       .status-not_started { background-color: #F3F4F6; border-left-color: #9CA3AF; }
+       .status-in_progress { background-color: #FEF9C3; border-left-color: #FBBF24; }
+       .status-completed { background-color: #D1FAE5; border-left-color: #10B981; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #A68B6D; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #8e765c; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="app" class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#4A443E] mb-2">Job Skill Preparation Tracker</h1>
+            <p class="text-lg text-[#6F6964] max-w-3xl mx-auto">Track your learning progress for key software and AI engineering skills. Your progress is saved automatically and securely in your browser.</p>
+        </header>
+
+        <main>
+            <section id="overall-progress" class="mb-12 bg-white p-6 rounded-2xl shadow-lg">
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="text-xl font-semibold text-[#4A443E]">Overall Progress</h2>
+                    <span id="overall-progress-text" class="font-semibold text-[#5A8B72]">0%</span>
+                </div>
+                <div class="progress-bar-bg w-full h-4 rounded-full overflow-hidden">
+                    <div id="overall-progress-bar" class="progress-bar-fill h-full rounded-full" style="width: 0%;"></div>
+                </div>
+            </section>
+
+            <section id="progress-timeline" class="mb-12 bg-white p-6 rounded-2xl shadow-lg">
+                <h2 class="text-xl font-semibold text-[#4A443E] mb-4">Progress Timeline</h2>
+                <div class="chart-container" style="position: relative; height:40vh; max-height: 350px; width:100%;">
+                    <canvas id="timelineChart"></canvas>
+                </div>
+            </section>
+
+            <div id="skill-categories-container" class="space-y-6">
+            </div>
+            
+            <div class="mt-12 text-center">
+                <button id="reset-button" class="bg-[#A68B6D] text-white font-semibold py-2 px-6 rounded-full hover:bg-[#8e765c] transition duration-300 shadow-md">Reset All Progress</button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const skillData = {
+                "Universal Baseline": {
+                    "Data Structures & Algorithms": {
+                        intro: "Proficiency in DSA is the single most critical factor in passing technical coding interviews. The focus should be on recognizing underlying problem-solving patterns rather than memorizing solutions.",
+                        items: ["Core Data Structures", "Essential Algorithms & Techniques"]
+                    },
+                    "Programming Language Fluency": {
+                        intro: "Deep mastery of one primary language for interviews is essential. Python is the top choice for AI/data roles, but breadth in other languages is a key differentiator.",
+                        items: ["Primary Language: Python", "Secondary Languages"]
+                    },
+                    "Software Development Lifecycle & DevOps": {
+                        intro: "Modern engineers are expected to understand the full lifecycle of their code. This 'you build it, you run it' philosophy (DevOps/MLOps) is a critical competency.",
+                        items: ["Version Control", "Containerization", "Continuous Integration & Continuous Delivery (CI/CD)", "Infrastructure as Code (IaC)"]
+                    },
+                    "Foundational Theories & Methodologies": {
+                        intro: "A deep understanding of core principles is essential for writing clean, scalable, and maintainable code and for effective collaboration.",
+                        items: ["Object-Oriented Programming (OOP) & Design", "Project Management Methodologies"]
+                    }
+                },
+                "Full Stack & General SWE": {
+                    "Frontend Technologies": {
+                        intro: "The frontend is the user-facing part of an application, dominated by component-based architectures.",
+                        items: ["Core Languages", "Modern JavaScript Frameworks", "Meta-Frameworks", "Styling & CSS Frameworks", "State Management Libraries (for React)"]
+                    },
+                    "Backend Technologies": {
+                        intro: "The backend is responsible for business logic, database interactions, and handling client requests.",
+                        items: ["Backend Frameworks", "API Design & Principles", "Authentication & Authorization"]
+                    },
+                    "Database Management": {
+                        intro: "Modern applications often use 'polyglot persistence,' choosing the right database for the right job. Understanding the trade-offs is key.",
+                        items: ["Relational Databases (SQL)", "NoSQL Databases", "Core Database Concepts"]
+                    }
+                },
+                "AI, ML & LLM Engineer": {
+                    "The Mathematical & Statistical Foundation": {
+                        intro: "A strong mathematical foundation is what separates a practitioner who can only use libraries from an engineer who understands why they work.",
+                        items: ["Linear Algebra", "Calculus", "Probability & Statistics"]
+                    },
+                    "Classical Machine Learning & Deep Learning Theory": {
+                        intro: "Understanding the entire ML workflow and the theory behind both classical and deep learning models is essential.",
+                        items: ["ML Workflow & Core Concepts", "Classical ML Algorithms", "Deep Learning Fundamentals", "Key Neural Network Architectures"]
+                    },
+                    "The Modern LLM Engineer's Toolkit": {
+                        intro: "This covers the full stack for building modern AI applications, from interacting with models to fine-tuning and deployment.",
+                        items: ["Application Layer: Prompt & Context Engineering", "Adaptation Layer: Model Fine-Tuning", "Foundational Layer: Essential Frameworks, Libraries & Infrastructure"]
+                    }
+                },
+                "Hiring Process Mastery": {
+                    "The System Design Interview": {
+                        intro: "This interview assesses the ability to design large-scale, distributed systems, evaluating architectural thinking and knowledge of trade-offs.",
+                        items: ["Core Concepts & Principles", "A Structured Interview Framework"]
+                    },
+                    "The Coding Challenge": {
+                        intro: "Consistent, deliberate practice is the only path to success in coding interviews.",
+                        items: ["Practice Platforms", "Strategy for Success"]
+                    },
+                    "The Behavioral Interview": {
+                        intro: "These interviews assess collaboration, problem-solving, and cultural fit. Use them to demonstrate technical competence through well-structured stories.",
+                        items: ["The STAR Method", "Common Question Categories"]
+                    }
+                }
+            };
+
+            const container = document.getElementById('skill-categories-container');
+            const overallProgressBar = document.getElementById('overall-progress-bar');
+            const overallProgressText = document.getElementById('overall-progress-text');
+            const resetButton = document.getElementById('reset-button');
+            const timelineChartCanvas = document.getElementById('timelineChart');
+            
+            let progressData = {};
+            let timelineChart;
+
+            const statuses = [
+                { id: 'not_started', name: 'Not Started' },
+                { id: 'in_progress', name: 'In Progress' },
+                { id: 'completed', name: 'Completed' }
+            ];
+
+            function getAllSkillItems() {
+                return Object.values(skillData).flatMap(category => 
+                    Object.values(category).flatMap(skill => skill.items)
+                );
+            }
+            
+            function migrateData(oldData) {
+                const newData = {};
+                const allSkills = getAllSkillItems();
+                allSkills.forEach(item => {
+                    const oldStatus = oldData[item];
+                    if (typeof oldStatus === 'string') {
+                        newData[item] = {
+                            status: oldStatus,
+                            completedDate: oldStatus === 'completed' ? new Date().toISOString() : null
+                        };
+                    } else if (oldStatus && typeof oldStatus === 'object') {
+                        newData[item] = oldStatus;
+                    } else {
+                         newData[item] = { status: 'not_started', completedDate: null };
+                    }
+                });
+                return newData;
+            }
+
+            function loadProgress() {
+                const savedProgress = localStorage.getItem('skillProgressTracker');
+                let parsedData = {};
+                if (savedProgress) {
+                    try {
+                        parsedData = JSON.parse(savedProgress);
+                    } catch (e) {
+                        console.error("Error parsing saved progress:", e);
+                        parsedData = {};
+                    }
+                }
+                
+                progressData = migrateData(parsedData);
+                
+                const allSkills = getAllSkillItems();
+                allSkills.forEach(item => {
+                    if(!progressData[item]) {
+                        progressData[item] = { status: 'not_started', completedDate: null };
+                    }
+                });
+            }
+
+            function saveProgress() {
+                localStorage.setItem('skillProgressTracker', JSON.stringify(progressData));
+            }
+
+            function renderCategories() {
+                container.innerHTML = '';
+                Object.entries(skillData).forEach(([categoryName, skills]) => {
+                    const categoryId = categoryName.replace(/\s+/g, '-').toLowerCase();
+                    const categoryElement = document.createElement('div');
+                    categoryElement.className = 'bg-white rounded-2xl shadow-lg overflow-hidden';
+                    
+                    let accordionContentHtml = '';
+                    Object.entries(skills).forEach(([skillName, skillDetails]) => {
+                        accordionContentHtml += `<div class="p-4 border-t border-gray-100"><h4 class="font-semibold text-lg text-[#38332F] mb-3">${skillName}</h4><p class="text-sm text-gray-600 italic mb-4">${skillDetails.intro}</p><div class="space-y-2">`;
+                        skillDetails.items.forEach(item => {
+                            const currentStatus = progressData[item]?.status || 'not_started';
+                            accordionContentHtml += `
+                                <div class="skill-item flex items-center justify-between p-3 rounded-md status-${currentStatus}" style="border-left-width: 4px;">
+                                    <span class="font-medium text-gray-800 text-sm">${item}</span>
+                                    <div class="flex items-center gap-3">
+                                        <select data-skill-item="${item}" class="status-select text-sm rounded-md border-gray-300 shadow-sm focus:border-[#A68B6D] focus:ring-[#A68B6D] py-1 pl-2 pr-8 bg-white">
+                                            ${statuses.map(s => `<option value="${s.id}" ${s.id === currentStatus ? 'selected' : ''}>${s.name}</option>`).join('')}
+                                        </select>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        accordionContentHtml += `</div></div>`;
+                    });
+
+                    categoryElement.innerHTML = `
+                        <div class="accordion-header p-6 flex justify-between items-center">
+                            <div>
+                                <h3 class="text-xl font-semibold text-[#4A443E]">${categoryName}</h3>
+                                <div class="progress-bar-bg w-full h-2 rounded-full mt-2 overflow-hidden">
+                                    <div id="progress-${categoryId}" class="progress-bar-fill h-full rounded-full" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <span id="progress-text-${categoryId}" class="text-sm font-semibold text-gray-600 mr-4">0%</span>
+                                <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                            </div>
+                        </div>
+                        <div class="accordion-content bg-gray-50/50">
+                            ${accordionContentHtml}
+                        </div>
+                    `;
+                    container.appendChild(categoryElement);
+                    updateCategoryProgress(categoryName);
+                });
+                addEventListeners();
+            }
+
+            function updateCategoryProgress(categoryName) {
+                const categoryId = categoryName.replace(/\s+/g, '-').toLowerCase();
+                let categoryItems = [];
+                Object.values(skillData[categoryName]).forEach(skill => {
+                    categoryItems = categoryItems.concat(skill.items);
+                });
+
+                const completedItems = categoryItems.filter(item => progressData[item]?.status === 'completed').length;
+                const percentage = categoryItems.length > 0 ? (completedItems / categoryItems.length) * 100 : 0;
+                
+                const progressBar = document.getElementById(`progress-${categoryId}`);
+                const progressText = document.getElementById(`progress-text-${categoryId}`);
+                if(progressBar && progressText) {
+                    progressBar.style.width = `${percentage}%`;
+                    progressText.textContent = `${Math.round(percentage)}%`;
+                }
+            }
+
+            function updateOverallProgress() {
+                const allItems = getAllSkillItems();
+                const completedItems = allItems.filter(item => progressData[item]?.status === 'completed').length;
+                const percentage = allItems.length > 0 ? (completedItems / allItems.length) * 100 : 0;
+
+                overallProgressBar.style.width = `${percentage}%`;
+                overallProgressText.textContent = `${Math.round(percentage)}%`;
+            }
+
+            function renderTimelineGraph() {
+                const completedSkills = Object.entries(progressData)
+                    .filter(([name, details]) => details.status === 'completed' && details.completedDate)
+                    .map(([name, details]) => ({ name, ...details }))
+                    .sort((a, b) => new Date(a.completedDate) - new Date(b.completedDate));
+
+                if (completedSkills.length === 0) {
+                     if (timelineChart) timelineChart.destroy();
+                     const ctx = timelineChartCanvas.getContext('2d');
+                     ctx.clearRect(0, 0, timelineChartCanvas.width, timelineChartCanvas.height);
+                     ctx.font = "16px Inter";
+                     ctx.fillStyle = "#6F6964";
+                     ctx.textAlign = "center";
+                     ctx.fillText("Complete some skills to see your progress here!", timelineChartCanvas.width / 2, timelineChartCanvas.height / 2);
+                     return;
+                }
+
+                const dataPoints = [];
+                let cumulativeCount = 0;
+                completedSkills.forEach(skill => {
+                    cumulativeCount++;
+                    dataPoints.push({
+                        x: new Date(skill.completedDate),
+                        y: cumulativeCount,
+                        skillName: skill.name
+                    });
+                });
+
+                if (timelineChart) {
+                    timelineChart.data.datasets[0].data = dataPoints;
+                    timelineChart.update();
+                } else {
+                    const ctx = timelineChartCanvas.getContext('2d');
+                    timelineChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            datasets: [{
+                                label: 'Skills Completed',
+                                data: dataPoints,
+                                borderColor: '#5A8B72',
+                                backgroundColor: 'rgba(90, 139, 114, 0.1)',
+                                borderWidth: 2,
+                                tension: 0.1,
+                                fill: true,
+                                pointRadius: 4,
+                                pointBackgroundColor: '#5A8B72'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                x: {
+                                    type: 'time',
+                                    time: {
+                                        unit: 'day',
+                                        tooltipFormat: 'MMM d, yyyy',
+                                        displayFormats: {
+                                            day: 'MMM d'
+                                        }
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: 'Date'
+                                    },
+                                    grid: {
+                                        display: false
+                                    }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Cumulative Skills Completed'
+                                    },
+                                    ticks: {
+                                        stepSize: 1
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const skillName = context.raw.skillName;
+                                            return `Skill: ${skillName}`;
+                                        },
+                                        afterLabel: function(context) {
+                                            const count = context.raw.y;
+                                            return `Total Completed: ${count}`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            function addEventListeners() {
+                document.querySelectorAll('.status-select').forEach(select => {
+                    select.addEventListener('change', (e) => {
+                        const skillItemName = e.target.dataset.skillItem;
+                        const newStatus = e.target.value;
+                        
+                        const oldStatus = progressData[skillItemName]?.status;
+                        progressData[skillItemName].status = newStatus;
+
+                        if (newStatus === 'completed' && oldStatus !== 'completed') {
+                            progressData[skillItemName].completedDate = new Date().toISOString();
+                        } else if (newStatus !== 'completed') {
+                            progressData[skillItemName].completedDate = null;
+                        }
+                        
+                        const skillItemElement = e.target.closest('.skill-item');
+                        skillItemElement.className = `skill-item flex items-center justify-between p-3 rounded-md status-${newStatus}`;
+                        skillItemElement.style.borderLeftWidth = '4px';
+
+                        saveProgress();
+                        
+                        const categoryName = Object.keys(skillData).find(cat => 
+                            Object.values(skillData[cat]).some(skill => skill.items.includes(skillItemName))
+                        );
+                        if (categoryName) {
+                            updateCategoryProgress(categoryName);
+                        }
+                        updateOverallProgress();
+                        renderTimelineGraph();
+                    });
+                });
+
+                document.querySelectorAll('.accordion-header').forEach(header => {
+                    header.addEventListener('click', () => {
+                        const content = header.nextElementSibling;
+                        const icon = header.querySelector('svg');
+                        header.parentElement.classList.toggle('is-open');
+
+                        if (content.style.maxHeight) {
+                            content.style.maxHeight = null;
+                            content.style.paddingTop = '0';
+                            content.style.paddingBottom = '0';
+                            icon.style.transform = 'rotate(0deg)';
+                        } else {
+                            content.style.paddingTop = '0.5rem';
+                            content.style.paddingBottom = '1.5rem';
+                            content.style.maxHeight = content.scrollHeight + "px";
+                            icon.style.transform = 'rotate(180deg)';
+                        }
+                    });
+                });
+            }
+
+            resetButton.addEventListener('click', () => {
+                if (window.confirm('Are you sure you want to reset all your progress? This action cannot be undone.')) {
+                    localStorage.removeItem('skillProgressTracker');
+                    progressData = {};
+                    loadProgress();
+                    renderCategories();
+                    updateOverallProgress();
+                    renderTimelineGraph();
+                }
+            });
+
+            // Initial Load
+            loadProgress();
+            renderCategories();
+            updateOverallProgress();
+            renderTimelineGraph();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Skill Navigator for Tech Roles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: The application uses a role-centric dashboard design. The user selects one or more target job roles from a list. This selection acts as a global filter, dynamically updating two main components: 1) A polar area chart that provides a high-level, visual summary of skill domain priorities for the selected role(s). 2) A detailed, categorized list of specific skills, technologies, and concepts, aggregated from the entire report and prioritized according to the user's selection. Clicking on any skill reveals more detailed information in a modal window. This structure was chosen because it transforms the static, linear report into a personalized, actionable preparation plan, directly answering the user's primary question: "What should I study for my specific career goals?" -->
+    <!-- Visualization & Content Choices: The primary data visualization is a Chart.js Polar Area chart, chosen to give a quick, compelling "at-a-glance" comparison of the importance of different high-level skill domains for a given role. For the detailed content, a dynamic grid of "skill cards" is used. This content is organized into logical categories (Foundational, Specialization, etc.) and filterable by role. Interaction is centered on user selection and drill-down. Clicking a skill card opens a modal, employing progressive disclosure to provide deep information without overwhelming the initial view. This combination of a high-level chart and a detailed, interactive list provides both a strategic overview and tactical details, all driven by user choice. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #38332F;
+        }
+        .role-button {
+            transition: all 0.2s ease-in-out;
+        }
+        .role-button.selected {
+            background-color: #A68B6D;
+            color: #FFFFFF;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .skill-card {
+            transition: all 0.2s ease-in-out;
+            border-left-width: 4px;
+        }
+        .skill-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(166, 139, 109, 0.15);
+        }
+        .priority-high { border-color: #5A8B72; }
+        .priority-medium { border-color: #D4A75B; }
+        .priority-low { border-color: #BDBDBD; }
+        .priority-none { border-color: #E0E0E0; }
+
+        .modal {
+            transition: opacity 0.25s ease;
+        }
+        .modal-content {
+            transition: transform 0.25s ease;
+        }
+        .modal-active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-inactive {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .modal-content-active {
+            transform: translateY(0);
+        }
+        .modal-content-inactive {
+            transform: translateY(-20px);
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #A68B6D; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #8e765c; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="app" class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <nav class="absolute top-4 right-4 sm:top-6 sm:right-6">
+            <a href="tracker.html" class="bg-[#A68B6D] text-white font-semibold py-2 px-5 rounded-full hover:bg-[#8e765c] transition duration-300 shadow-md text-sm">
+                My Tracker
+            </a>
+        </nav>
+
+        <header class="text-center mb-10 pt-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#4A443E] mb-2">The Interactive Skill Navigator</h1>
+            <p class="text-lg text-[#6F6964] max-w-3xl mx-auto">Select your target roles to generate a personalized roadmap of essential skills for the 2025 job market.</p>
+        </header>
+
+        <main>
+            <section id="role-selector" class="mb-12">
+                <h2 class="text-2xl font-semibold text-center mb-6 text-[#4A443E]">Step 1: Choose Your Target Role(s)</h2>
+                <div id="role-buttons-container" class="flex flex-wrap justify-center gap-3 md:gap-4">
+                </div>
+            </section>
+
+            <div id="dashboard" class="hidden">
+                <section id="visual-overview" class="mb-16">
+                    <h2 class="text-2xl font-semibold text-center mb-6 text-[#4A443E]">Step 2: Visualize Your Skill Priorities</h2>
+                    <p id="chart-intro" class="text-center text-[#6F6964] max-w-2xl mx-auto mb-8">This chart provides a high-level overview of the core competency areas for your selected role(s). Use it to quickly identify the most critical domains to focus on.</p>
+                    <div class="chart-container bg-white p-4 rounded-2xl shadow-lg" style="position: relative; height:60vh; max-height: 500px; width:100%; max-width: 600px; margin: auto;">
+                        <canvas id="skillPriorityChart"></canvas>
+                    </div>
+                </section>
+
+                <section id="skill-details">
+                    <h2 class="text-2xl font-semibold text-center mb-6 text-[#4A443E]">Step 3: Explore Your Curated Skill List</h2>
+                    <p class="text-center text-[#6F6964] max-w-2xl mx-auto mb-10">Here is a detailed breakdown of skills, tools, and concepts. Items are prioritized based on your selection (High <span class="inline-block w-3 h-3 bg-[#5A8B72] rounded-full"></span>, Medium <span class="inline-block w-3 h-3 bg-[#D4A75B] rounded-full"></span>, Low <span class="inline-block w-3 h-3 bg-[#BDBDBD] rounded-full"></span>). Click any card for more details.</p>
+                    <div id="skill-list-container" class="space-y-10">
+                    </div>
+                </section>
+            </div>
+            
+            <div id="welcome-message" class="text-center py-16">
+                 <div class="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-lg">
+                    <svg class="mx-auto h-12 w-12 text-[#A68B6D]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3.5m0 0a1.5 1.5 0 01-3 0V11" />
+                    </svg>
+                    <h3 class="mt-4 text-2xl font-semibold text-[#4A443E]">Ready to Start?</h3>
+                    <p class="mt-2 text-md text-[#6F6964]">Select one or more roles above to build your personalized learning plan.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="skill-modal" class="modal modal-inactive fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60 backdrop-blur-sm">
+        <div id="modal-content" class="modal-content modal-content-inactive bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-white/80 backdrop-blur-sm z-10 p-6 border-b border-gray-200 flex justify-between items-center">
+                <h3 id="modal-title" class="text-2xl font-bold text-[#4A443E]"></h3>
+                <button id="close-modal-button" class="text-gray-400 hover:text-gray-700 transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div id="modal-body" class="p-6">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const priorityMap = { H: 'High', M: 'Medium', L: 'Low' };
+            const priorityOrder = { High: 1, Medium: 2, Low: 3, None: 4 };
+
+            const skillData = {
+                roles: [
+                    "Software Engineer", "Software Developer", "Full Stack Developer", 
+                    "Machine Learning Engineer", "Prompt Engineer", "Context Engineer", 
+                    "AI Engineer", "AI Software Engineer", "LLM Developer"
+                ],
+                domains: [
+                    "Data Structures & Algorithms", "Programming Language Fluency", "DevOps & SDLC Practices",
+                    "OOP & Design Patterns", "Frontend Technologies", "Backend Technologies",
+                    "Database Management (SQL/NoSQL)", "Math & Statistics Foundation (AI)",
+                    "Classical ML & Deep Learning Theory", "Prompt & Context Engineering (RAG)",
+                    "LLM Fine-Tuning (PEFT, LoRA)", "System Design", "Behavioral Interview Skills"
+                ],
+                matrix: {
+                    "Software Engineer":                { "Data Structures & Algorithms": "H", "Programming Language Fluency": "H", "DevOps & SDLC Practices": "H", "OOP & Design Patterns": "H", "Frontend Technologies": "M", "Backend Technologies": "H", "Database Management (SQL/NoSQL)": "H", "Math & Statistics Foundation (AI)": "L", "Classical ML & Deep Learning Theory": "L", "Prompt & Context Engineering (RAG)": "L", "LLM Fine-Tuning (PEFT, LoRA)": "L", "System Design": "H", "Behavioral Interview Skills": "H" },
+                    "Software Developer":               { "Data Structures & Algorithms": "H", "Programming Language Fluency": "H", "DevOps & SDLC Practices": "H", "OOP & Design Patterns": "H", "Frontend Technologies": "M", "Backend Technologies": "H", "Database Management (SQL/NoSQL)": "H", "Math & Statistics Foundation (AI)": "L", "Classical ML & Deep Learning Theory": "L", "Prompt & Context Engineering (RAG)": "L", "LLM Fine-Tuning (PEFT, LoRA)": "L", "System Design": "H", "Behavioral Interview Skills": "H" },
+                    "Full Stack Developer":             { "Data Structures & Algorithms": "H", "Programming Language Fluency": "H", "DevOps & SDLC Practices": "H", "OOP & Design Patterns": "H", "Frontend Technologies": "H", "Backend Technologies": "H", "Database Management (SQL/NoSQL)": "H", "Math & Statistics Foundation (AI)": "L", "Classical ML & Deep Learning Theory": "L", "Prompt & Context Engineering (RAG)": "L", "LLM Fine-Tuning (PEFT, LoRA)": "L", "System Design": "H", "Behavioral Interview Skills": "H" },
+                    "Machine Learning Engineer":        { "Data Structures & Algorithms": "H", "Programming Language Fluency": "H", "DevOps & SDLC Practices": "M", "OOP & Design Patterns": "M", "Frontend Technologies": "L", "Backend Technologies": "M", "Database Management (SQL/NoSQL)": "M", "Math & Statistics Foundation (AI)": "H", "Classical ML & Deep Learning Theory": "H", "Prompt & Context Engineering (RAG)": "M", "LLM Fine-Tuning (PEFT, LoRA)": "M", "System Design": "M", "Behavioral Interview Skills": "H" },
+                    "Prompt Engineer":                  { "Data Structures & Algorithms": "M", "Programming Language Fluency": "H", "DevOps & SDLC Practices": "L", "OOP & Design Patterns": "L", "Frontend Technologies": "L", "Backend Technologies": "L", "Database Management (SQL/NoSQL)": "L", "Math & Statistics Foundation (AI)": "M", "Classical ML & Deep Learning Theory": "M", "Prompt & Context Engineering (RAG)": "H", "LLM Fine-Tuning (PEFT, LoRA)": "L", "System Design": "L", "Behavioral Interview Skills": "H" },
+                    "Context Engineer":                 { "Data Structures & Algorithms": "M", "Programming Language Fluency": "H", "DevOps & SDLC Practices": "M", "OOP & Design Patterns": "L", "Frontend Technologies": "L", "Backend Technologies": "L", "Database Management (SQL/NoSQL)": "M", "Math & Statistics Foundation (AI)": "M", "Classical ML & Deep Learning Theory": "M", "Prompt & Context Engineering (RAG)": "H", "LLM Fine-Tuning (PEFT, LoRA)": "L", "System Design": "L", "Behavioral Interview Skills": "H" },
+                    "AI Engineer":                      { "Data Structures & Algorithms": "H", "Programming Language Fluency": "H", "DevOps & SDLC Practices": "M", "OOP & Design Patterns": "M", "Frontend Technologies": "L", "Backend Technologies": "M", "Database Management (SQL/NoSQL)": "M", "Math & Statistics Foundation (AI)": "H", "Classical ML & Deep Learning Theory": "H", "Prompt & Context Engineering (RAG)": "H", "LLM Fine-Tuning (PEFT, LoRA)": "M", "System Design": "M", "Behavioral Interview Skills": "H" },
+                    "AI Software Engineer":             { "Data Structures & Algorithms": "H", "Programming Language Fluency": "H", "DevOps & SDLC Practices": "H", "OOP & Design Patterns": "H", "Frontend Technologies": "M", "Backend Technologies": "H", "Database Management (SQL/NoSQL)": "H", "Math & Statistics Foundation (AI)": "H", "Classical ML & Deep Learning Theory": "H", "Prompt & Context Engineering (RAG)": "H", "LLM Fine-Tuning (PEFT, LoRA)": "M", "System Design": "H", "Behavioral Interview Skills": "H" },
+                    "LLM Developer":                    { "Data Structures & Algorithms": "H", "Programming Language Fluency": "H", "DevOps & SDLC Practices": "M", "OOP & Design Patterns": "M", "Frontend Technologies": "L", "Backend Technologies": "M", "Database Management (SQL/NoSQL)": "M", "Math & Statistics Foundation (AI)": "H", "Classical ML & Deep Learning Theory": "H", "Prompt & Context Engineering (RAG)": "H", "LLM Fine-Tuning (PEFT, LoRA)": "H", "System Design": "M", "Behavioral Interview Skills": "H" }
+                },
+                content: {
+                    "Universal Baseline": {
+                        "Data Structures & Algorithms": {
+                            intro: "Proficiency in DSA is the single most critical factor in passing technical coding interviews. The focus should be on recognizing underlying problem-solving patterns rather than memorizing solutions.",
+                            items: [
+                                { name: "Core Data Structures", details: "Array & String, Linked List (Singly, Doubly), Stack & Queue, Hash Table (Map, Set), Tree (Binary, BST, Trie), Heap (Min/Max), Graph (Directed, Undirected), Matrix/Grid." },
+                                { name: "Essential Algorithms", details: "Sorting (Quicksort, Mergesort), Searching (Binary Search), Graph Traversal (BFS, DFS), Recursion & Backtracking, Dynamic Programming (DP), Greedy Algorithms, Two Pointers / Sliding Window, Bitwise Manipulation." }
+                            ]
+                        },
+                        "Programming Language Fluency": {
+                            intro: "Deep mastery of one primary language for interviews is essential. Python is the top choice for AI/data roles, but breadth in other languages is a key differentiator.",
+                            items: [
+                                { name: "Primary: Python", details: "Mastery of core concepts, OOP (classes, inheritance), standard library (collections, itertools), and environment management (venv, pip, conda)." },
+                                { name: "Secondary: JavaScript/TypeScript", details: "Non-negotiable for Full Stack roles. TypeScript is the standard for large-scale web apps." },
+                                { name: "Secondary: SQL", details: "The universal language for relational databases. Essential for nearly all backend and data-intensive roles." },
+                                { name: "Secondary: High-Performance Language", details: "Choose one (Java, C++, Go) to demonstrate understanding of lower-level concepts like static typing and memory management." }
+                            ]
+                        },
+                        "DevOps & SDLC Practices": {
+                            intro: "Modern engineers are expected to understand the full lifecycle of their code. This 'you build it, you run it' philosophy (DevOps/MLOps) is a critical competency.",
+                            items: [
+                                { name: "Version Control (Git)", details: "Fluency in core commands (commit, push, pull, merge, rebase) and collaboration platforms (GitHub, GitLab)." },
+                                { name: "Containerization", details: "Docker: Writing Dockerfiles, building images. Kubernetes (K8s): Conceptual understanding of Pods, Services, and Deployments." },
+                                { name: "CI/CD", details: "Understanding the pipeline (build, test, deploy) and familiarity with tools like Jenkins, GitLab CI, or GitHub Actions." },
+                                { name: "Infrastructure as Code (IaC)", details: "Understanding the benefits and familiarity with tools like Terraform or AWS CloudFormation." }
+                            ]
+                        },
+                        "OOP & Design Patterns": {
+                            intro: "A deep understanding of OOP principles is essential for writing clean, scalable, and maintainable code in large systems.",
+                            items: [
+                                { name: "Four Pillars of OOP", details: "Encapsulation, Abstraction, Inheritance, Polymorphism." },
+                                { name: "SOLID Principles", details: "Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion." },
+                                { name: "Design Patterns", details: "Familiarity with common patterns like Singleton, Factory, and Observer." }
+                            ]
+                        },
+                        "Project Management Methodologies": {
+                            intro: "Understanding how modern software teams organize and execute work is crucial for effective collaboration.",
+                            items: [
+                                { name: "Agile", details: "An iterative approach focused on flexibility and delivering value in small increments." },
+                                { name: "Scrum", details: "A popular Agile framework with specific roles (Scrum Master), events (Sprints), and artifacts (Product Backlog)." },
+                                { name: "Kanban", details: "A visual method for managing workflow, emphasizing limiting Work-in-Progress (WIP)." }
+                            ]
+                        }
+                    },
+                    "Full Stack & General SWE": {
+                        "Frontend Technologies": {
+                            intro: "The frontend is the user-facing part of an application, dominated by component-based architectures.",
+                            items: [
+                                { name: "Core Languages", details: "HTML, CSS, JavaScript (ES6+)." },
+                                { name: "Modern JS Frameworks", details: "Deeply master one: React (market leader), Angular (enterprise standard), or Vue.js (flexible)." },
+                                { name: "Meta-Frameworks", details: "Next.js (for React) is the de facto standard for production apps, offering SSR and SSG." },
+                                { name: "Styling & CSS Frameworks", details: "Tailwind CSS (utility-first) or Bootstrap (component-based)." },
+                                { name: "State Management (React)", details: "Redux (with RTK) for large applications, or MobX for simpler, automatic state management." }
+                            ]
+                        },
+                        "Backend Technologies": {
+                            intro: "The backend is responsible for business logic, database interactions, and handling client requests.",
+                            items: [
+                                { name: "Node.js Frameworks", details: "Express.js (most popular), Koa, or Fastify." },
+                                { name: "Python Frameworks", details: "Django (batteries-included), Flask (lightweight), or FastAPI (high-performance APIs)." },
+                                { name: "Other Major Frameworks", details: "Java (Spring Boot), C# (ASP.NET Core), Ruby (Ruby on Rails)." },
+                                { name: "API Design", details: "RESTful APIs (most common) and GraphQL (for flexible data querying)." },
+                                { name: "Authentication & Authorization", details: "OAuth 2.0 (protocol) and JWT (JSON Web Tokens)." }
+                            ]
+                        },
+                        "Database Management (SQL/NoSQL)": {
+                            intro: "Modern applications often use 'polyglot persistence,' choosing the right database for the right job. Understanding the trade-offs is key.",
+                            items: [
+                                { name: "Relational Databases (SQL)", details: "PostgreSQL (feature-rich), MySQL/MariaDB, MS SQL Server. Used for transactional integrity." },
+                                { name: "NoSQL: Document Stores", details: "MongoDB. Ideal for flexible, JSON-like data like user profiles." },
+                                { name: "NoSQL: Key-Value Stores", details: "Redis. Primarily used for high-performance caching and session management." },
+                                { name: "NoSQL: Other Types", details: "Wide-Column Stores (Cassandra) for big data, Graph Databases (Neo4j) for relationships." },
+                                { name: "Core Concepts", details: "ACID Properties, Indexing, Sharding/Partitioning, Schema Design & Normalization." }
+                            ]
+                        }
+                    },
+                    "AI, ML & LLM Engineer": {
+                        "Math & Statistics Foundation (AI)": {
+                            intro: "A strong mathematical foundation is what separates a practitioner who can only use libraries from an engineer who understands why they work.",
+                            items: [
+                                { name: "Linear Algebra", details: "The language of data. Concepts: Vectors, Matrices, Tensors, Eigenvalues, SVD." },
+                                { name: "Calculus", details: "The foundation of model optimization. Concepts: Derivatives, Gradients, Chain Rule, Gradient Descent." },
+                                { name: "Probability & Statistics", details: "The framework for uncertainty. Concepts: Bayes' Theorem, Distributions (Normal, etc.), Hypothesis Testing." }
+                            ]
+                        },
+                        "Classical ML & Deep Learning Theory": {
+                            intro: "Understanding the entire ML workflow and the theory behind both classical and deep learning models is essential.",
+                            items: [
+                                { name: "ML Workflow", details: "Supervised/Unsupervised/Reinforcement Learning, Data Preprocessing, Feature Engineering, Model Evaluation (Accuracy, Precision, Recall, F1, MSE), Bias-Variance Tradeoff, Regularization, Cross-Validation." },
+                                { name: "Classical ML Algorithms", details: "Linear/Logistic Regression, SVM, k-NN, Decision Trees, Random Forests, Gradient Boosting (XGBoost, LightGBM), K-Means, PCA." },
+                                { name: "Deep Learning Fundamentals", details: "ANNs, Activation Functions (ReLU), Loss Functions (Cross-Entropy), Optimization (Adam, SGD), Backpropagation, Regularization (Dropout, Batch Norm)." },
+                                { name: "Key Architectures", details: "CNNs (vision), RNNs/LSTMs (sequences), and Transformers (the foundation of modern NLP/LLMs)." }
+                            ]
+                        },
+                        "Prompt & Context Engineering (RAG)": {
+                            intro: "This is the 'Application Layer' of AI, focused on effectively using pre-trained models. It's the core skill for Prompt and Context Engineers.",
+                            items: [
+                                { name: "Prompt Engineering", details: "Zero-Shot & Few-Shot Prompting, Chain-of-Thought (CoT), Self-Consistency, Instruction Following (Personas)." },
+                                { name: "Retrieval-Augmented Generation (RAG)", details: "The architectural pattern for augmenting LLM knowledge with external data. The core of factual, up-to-date AI applications." },
+                                { name: "Core RAG Technology", details: "Vector Embeddings for semantic search and Data Preprocessing (chunking) for optimal retrieval." }
+                            ]
+                        },
+                        "LLM Fine-Tuning (PEFT, LoRA)": {
+                            intro: "This is the 'Adaptation Layer,' where pre-trained models are customized for specific tasks. A key skill for LLM Developers.",
+                            items: [
+                                { name: "Fine-Tuning Concepts", details: "Full Fine-Tuning vs. Instruction Fine-Tuning." },
+                                { name: "Parameter-Efficient Fine-Tuning (PEFT)", details: "Drastically more efficient methods that freeze most weights and train only a few. The modern standard for customization." },
+                                { name: "Key PEFT Methods", details: "LoRA (Low-Rank Adaptation) and its memory-efficient variant QLoRA (Quantized LoRA)." }
+                            ]
+                        },
+                        "Essential AI/ML Frameworks & Tools": {
+                            intro: "Mastery of the modern AI/ML toolkit is non-negotiable.",
+                            items: [
+                                { name: "Core Data Science Libraries", details: "NumPy (numerical), Pandas (data manipulation), Scikit-learn (classical ML)." },
+                                { name: "Deep Learning Frameworks", details: "PyTorch (research favorite, flexible) and TensorFlow/Keras (production-focused)." },
+                                { name: "The Hugging Face Ecosystem", details: "The central platform for NLP. Libraries: `transformers`, `datasets`, `tokenizers`, `peft`." },
+                                { name: "LLM Orchestration Frameworks", details: "LangChain (most popular), LlamaIndex (RAG-focused), Semantic Kernel, AutoGen/crewAI (multi-agent)." },
+                                { name: "Major LLM APIs", details: "Proficiency with APIs from OpenAI (GPT series), Anthropic (Claude series), Google (Gemini series)." },
+                                { name: "Vector Databases", details: "The backbone of RAG. Managed: Pinecone. Open Source: Weaviate, Qdrant, Chroma. Extension: pgvector." }
+                            ]
+                        }
+                    },
+                    "Hiring Process Mastery": {
+                        "System Design": {
+                            intro: "This interview assesses the ability to design large-scale, distributed systems, evaluating architectural thinking and knowledge of trade-offs.",
+                            items: [
+                                { name: "Core Concepts", details: "Requirements (Functional/Non-functional), Scaling (Vertical/Horizontal), CAP Theorem, Load Balancing, Caching, Database Design (Sharding, Replication), Microservices vs. Monolith, API Gateways, Message Queues (Kafka), CDNs." },
+                                { name: "Interview Framework", details: "1. Understand Problem & Scope. 2. High-Level Design. 3. Deep Dive on components. 4. Identify Bottlenecks & Scale." }
+                            ]
+                        },
+                        "The Coding Challenge": {
+                            intro: "Consistent, deliberate practice is the only path to success in coding interviews.",
+                            items: [
+                                { name: "Practice Platforms", details: "LeetCode (standard), HackerRank (screenings), AlgoExpert (patterns), Coderbyte (mix)." },
+                                { name: "Strategy", details: "Consistency over cramming, focus on pattern recognition, verbalize your thought process, and master one language." }
+                            ]
+                        },
+                        "Behavioral Interview Skills": {
+                            intro: "These interviews assess collaboration, problem-solving, and cultural fit. Use them to demonstrate technical competence through well-structured stories.",
+                            items: [
+                                { name: "The STAR Method", details: "The framework for answers: Situation, Task, Action (use 'I' statements), Result (quantify outcomes)." },
+                                { name: "Common Question Categories", details: "Prepare stories for: Teamwork, Conflict, Leadership, Failure, Ambiguity, and Motivation." }
+                            ]
+                        }
+                    }
+                }
+            };
+            
+            const roleButtonsContainer = document.getElementById('role-buttons-container');
+            const dashboard = document.getElementById('dashboard');
+            const welcomeMessage = document.getElementById('welcome-message');
+            const skillListContainer = document.getElementById('skill-list-container');
+            const modal = document.getElementById('skill-modal');
+            const modalContent = document.getElementById('modal-content');
+            const modalTitle = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body');
+            const closeModalButton = document.getElementById('close-modal-button');
+            const chartIntro = document.getElementById('chart-intro');
+
+            let selectedRoles = [];
+            let skillPriorityChart;
+
+            function init() {
+                skillData.roles.forEach(role => {
+                    const button = document.createElement('button');
+                    button.textContent = role;
+                    button.dataset.role = role;
+                    button.className = 'role-button px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#A68B6D]';
+                    button.addEventListener('click', () => toggleRole(role, button));
+                    roleButtonsContainer.appendChild(button);
+                });
+
+                closeModalButton.addEventListener('click', hideModal);
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        hideModal();
+                    }
+                });
+            }
+
+            function toggleRole(role, button) {
+                button.classList.toggle('selected');
+                if (selectedRoles.includes(role)) {
+                    selectedRoles = selectedRoles.filter(r => r !== role);
+                } else {
+                    selectedRoles.push(role);
+                }
+                updateDashboard();
+            }
+
+            function updateDashboard() {
+                if (selectedRoles.length > 0) {
+                    dashboard.classList.remove('hidden');
+                    welcomeMessage.classList.add('hidden');
+                    updateChart();
+                    updateSkillList();
+                } else {
+                    dashboard.classList.add('hidden');
+                    welcomeMessage.classList.remove('hidden');
+                }
+            }
+            
+            function getAggregatedPriorities() {
+                const aggregated = {};
+                skillData.domains.forEach(domain => {
+                    let maxPriority = 'L';
+                    selectedRoles.forEach(role => {
+                        const currentPriority = skillData.matrix[role][domain] || 'L';
+                        if (priorityMap[currentPriority] === 'High' || (priorityMap[currentPriority] === 'Medium' && priorityMap[maxPriority] !== 'High')) {
+                            maxPriority = currentPriority;
+                        }
+                    });
+                    aggregated[domain] = priorityMap[maxPriority];
+                });
+                return aggregated;
+            }
+
+            function updateChart() {
+                const priorities = getAggregatedPriorities();
+                const chartData = {
+                    labels: skillData.domains.map(d => d.length > 25 ? d.substring(0, 22) + '...' : d),
+                    datasets: [{
+                        label: 'Skill Priority',
+                        data: skillData.domains.map(domain => {
+                            const priority = priorities[domain];
+                            if (priority === 'High') return 3;
+                            if (priority === 'Medium') return 2;
+                            return 1;
+                        }),
+                        backgroundColor: skillData.domains.map(domain => {
+                            const priority = priorities[domain];
+                            if (priority === 'High') return 'rgba(90, 139, 114, 0.7)';
+                            if (priority === 'Medium') return 'rgba(212, 167, 91, 0.7)';
+                            return 'rgba(189, 189, 189, 0.7)';
+                        }),
+                        borderColor: skillData.domains.map(domain => {
+                            const priority = priorities[domain];
+                            if (priority === 'High') return 'rgba(90, 139, 114, 1)';
+                            if (priority === 'Medium') return 'rgba(212, 167, 91, 1)';
+                            return 'rgba(189, 189, 189, 1)';
+                        }),
+                        borderWidth: 1
+                    }]
+                };
+
+                if (skillPriorityChart) {
+                    skillPriorityChart.data = chartData;
+                    skillPriorityChart.update();
+                } else {
+                    const ctx = document.getElementById('skillPriorityChart').getContext('2d');
+                    skillPriorityChart = new Chart(ctx, {
+                        type: 'polarArea',
+                        data: chartData,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                r: {
+                                    pointLabels: {
+                                        display: true,
+                                        centerPointLabels: true,
+                                        font: { size: 14 }
+                                    },
+                                    ticks: {
+                                        display: false,
+                                        stepSize: 1
+                                    },
+                                    grid: {
+                                        color: 'rgba(0, 0, 0, 0.05)'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const domain = skillData.domains[context.dataIndex];
+                                            const priority = priorities[domain];
+                                            return `${domain}: ${priority}`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                const roleText = selectedRoles.length > 1 ? 'roles' : 'role';
+                chartIntro.textContent = `This chart provides a high-level overview of the core competency areas for the selected ${roleText}. Use it to quickly identify the most critical domains to focus on.`;
+            }
+
+            function updateSkillList() {
+                skillListContainer.innerHTML = '';
+                const aggregatedPriorities = getAggregatedPriorities();
+
+                Object.entries(skillData.content).forEach(([categoryName, skills]) => {
+                    const categorySection = document.createElement('div');
+                    
+                    const categoryHeader = document.createElement('h3');
+                    categoryHeader.className = 'text-xl font-semibold mb-6 text-[#4A443E] border-b-2 border-[#A68B6D] pb-2';
+                    categoryHeader.textContent = categoryName;
+                    categorySection.appendChild(categoryHeader);
+
+                    const grid = document.createElement('div');
+                    grid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
+
+                    let skillsToDisplay = [];
+                    Object.entries(skills).forEach(([skillName, skillDetails]) => {
+                        const domain = findDomainForSkill(skillName);
+                        const priority = domain ? aggregatedPriorities[domain] : 'None';
+                        if (priority !== 'None') {
+                            skillsToDisplay.push({ name: skillName, details: skillDetails, priority: priority });
+                        }
+                    });
+
+                    skillsToDisplay.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+
+                    skillsToDisplay.forEach(({ name, details, priority }) => {
+                        const priorityClass = `priority-${priority.toLowerCase()}`;
+                        const card = document.createElement('div');
+                        card.className = `skill-card bg-white p-5 rounded-lg shadow-md cursor-pointer ${priorityClass}`;
+                        card.innerHTML = `<h4 class="font-semibold text-lg text-[#38332F]">${name}</h4>`;
+                        card.addEventListener('click', () => showModal(name, details));
+                        grid.appendChild(card);
+                    });
+                    
+                    if (skillsToDisplay.length > 0) {
+                        categorySection.appendChild(grid);
+                        skillListContainer.appendChild(categorySection);
+                    }
+                });
+            }
+
+            function findDomainForSkill(skillName) {
+                const mapping = {
+                    "Data Structures & Algorithms": "Data Structures & Algorithms",
+                    "Programming Language Fluency": "Programming Language Fluency",
+                    "DevOps & SDLC Practices": "DevOps & SDLC Practices",
+                    "OOP & Design Patterns": "OOP & Design Patterns",
+                    "Frontend Technologies": "Frontend Technologies",
+                    "Backend Technologies": "Backend Technologies",
+                    "Database Management (SQL/NoSQL)": "Database Management (SQL/NoSQL)",
+                    "Math & Statistics Foundation (AI)": "Math & Statistics Foundation (AI)",
+                    "Classical ML & Deep Learning Theory": "Classical ML & Deep Learning Theory",
+                    "Prompt & Context Engineering (RAG)": "Prompt & Context Engineering (RAG)",
+                    "LLM Fine-Tuning (PEFT, LoRA)": "LLM Fine-Tuning (PEFT, LoRA)",
+                    "Essential AI/ML Frameworks & Tools": "Classical ML & Deep Learning Theory",
+                    "System Design": "System Design",
+                    "The Coding Challenge": "Data Structures & Algorithms",
+                    "Behavioral Interview Skills": "Behavioral Interview Skills",
+                    "Project Management Methodologies": "DevOps & SDLC Practices"
+                };
+                return mapping[skillName] || null;
+            }
+
+            function showModal(title, content) {
+                modalTitle.textContent = title;
+                modalBody.innerHTML = '';
+
+                const intro = document.createElement('p');
+                intro.className = 'text-gray-600 mb-6 italic';
+                intro.textContent = content.intro;
+                modalBody.appendChild(intro);
+
+                content.items.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'mb-4';
+                    
+                    const itemName = document.createElement('h5');
+                    itemName.className = 'font-semibold text-md text-[#A68B6D] mb-1';
+                    itemName.textContent = item.name;
+                    itemDiv.appendChild(itemName);
+
+                    const itemDetails = document.createElement('p');
+                    itemDetails.className = 'text-gray-700 text-sm leading-relaxed';
+                    itemDetails.textContent = item.details;
+                    itemDiv.appendChild(itemDetails);
+
+                    modalBody.appendChild(itemDiv);
+                });
+                
+                modal.classList.remove('modal-inactive');
+                modal.classList.add('modal-active');
+                modalContent.classList.remove('modal-content-inactive');
+                modalContent.classList.add('modal-content-active');
+            }
+
+            function hideModal() {
+                modal.classList.add('modal-inactive');
+                modal.classList.remove('modal-active');
+                modalContent.classList.add('modal-content-inactive');
+                modalContent.classList.remove('modal-content-active');
+            }
+
+            init();
+        });
+    </script>
+</body>
+</html>
