@@ -2,7 +2,7 @@
 
 This repository contains the source code for a two-part web application designed to help recent Computer Science graduates strategically prepare for technical job roles. The application provides tools to both explore required skills and track learning progress.
 
-The live application can be accessed here: \[Link to your Vercel deployment\]
+The live application can be accessed here: https://skill-tracker-ten.vercel.app/
 
 ## **Features**
 
