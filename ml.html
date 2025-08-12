@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Complete Roadmap to Machine Learning Mastery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #334155; /* slate-700 */
+        }
+       .nav-link.active {
+            background-color: #eef2ff; /* indigo-100 */
+            color: #4f46e5; /* indigo-600 */
+            font-weight: 600;
+        }
+       .content-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            border: 1px solid #e2e8f0; /* slate-200 */
+            transition: all 0.3s ease;
+        }
+       .content-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.07);
+        }
+       .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+       .checklist ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+        }
+       .checklist ul ul {
+            list-style-type: circle;
+            padding-left: 1.5rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        th {
+            background-color: #f1f5f9;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="relative min-h-screen md:flex">
+        <div class="md:hidden flex justify-between items-center p-4 bg-white border-b border-slate-200 sticky top-0 z-20">
+            <h1 class="text-lg font-bold text-slate-800">ML Mastery Roadmap</h1>
+            <button id="mobile-nav-toggle" class="p-2 rounded-md text-slate-500 hover:bg-slate-100">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </div>
+
+        <aside id="sidebar" class="bg-white text-slate-600 w-64 space-y-2 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out z-30 md:flex md:flex-col md:border-r md:border-slate-200">
+            <div class="px-4 mb-4">
+                <h2 class="text-xl font-bold text-slate-800">ML Mastery</h2>
+                <p class="text-sm text-slate-500">Your Interactive Roadmap</p>
+            </div>
+            <nav id="desktop-nav" class="flex-grow">
+                <a href="#level-1" class="nav-link block py-2.5 px-4 rounded-lg transition duration-200 hover:bg-indigo-50 hover:text-indigo-600">Level 1: Foundations</a>
+                <a href="#level-2" class="nav-link block py-2.5 px-4 rounded-lg transition duration-200 hover:bg-indigo-50 hover:text-indigo-600">Level 2: Practitioner's Core</a>
+                <a href="#level-3" class="nav-link block py-2.5 px-4 rounded-lg transition duration-200 hover:bg-indigo-50 hover:text-indigo-600">Level 3: Deep Learning</a>
+                <a href="#level-4" class="nav-link block py-2.5 px-4 rounded-lg transition duration-200 hover:bg-indigo-50 hover:text-indigo-600">Level 4: Advanced Topics</a>
+                <a href="#level-5" class="nav-link block py-2.5 px-4 rounded-lg transition duration-200 hover:bg-indigo-50 hover:text-indigo-600">Level 5: Production & Scale</a>
+                <a href="#level-6" class="nav-link block py-2.5 px-4 rounded-lg transition duration-200 hover:bg-indigo-50 hover:text-indigo-600">Level 6: Responsible AI</a>
+                <a href="#conclusion" class="nav-link block py-2.5 px-4 rounded-lg transition duration-200 hover:bg-indigo-50 hover:text-indigo-600">Mastery Checklist</a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 p-4 sm:p-6 md:p-10">
+            <header class="mb-12 text-center">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-slate-800 leading-tight mb-4">The Complete Roadmap to Machine Learning Mastery</h1>
+                <p class="text-lg text-slate-500 max-w-3xl mx-auto">A curriculum for the modern AI professional. Navigate through the levels to explore the essential skills, from foundational theory to cutting-edge applications.</p>
+            </header>
+
+            <section id="introduction" class="mb-16">
+                <h2 class="text-3xl font-bold text-slate-800 mb-6 border-b pb-2">Introduction: The Modern Machine Learning Landscape</h2>
+                <div class="space-y-6 text-slate-600">
+                    <div>
+                        <h3 class="text-xl font-semibold text-slate-700 mb-2">The Evolution of the ML Professional</h3>
+                        <p>The role of a machine learning (ML) professional has evolved far beyond that of a pure algorithm expert. In the contemporary job market, top-tier practitioners are hybrid professionals who blend the rigorous analytical skills of a statistician, the robust engineering practices of a software developer, and the strategic mindset of a business analyst. They are expected not only to build predictive models but also to understand the data that fuels them, the software infrastructure that supports them, and the business objectives they are meant to achieve. This curriculum is designed to cultivate this multifaceted expertise, guiding the aspiring professional from foundational theory to state-of-the-art application and ethical deployment.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-slate-700 mb-2">The T-Shaped ML Expert</h3>
+                        <p>A useful mental model for the ideal ML expert is the "T-shaped" professional. The horizontal bar of the 'T' represents a broad, comprehensive understanding of the entire machine learning lifecycle—from data acquisition and mathematical foundations to model deployment and monitoring. This breadth allows for effective collaboration and a holistic view of a project. The vertical bar of the 'T' signifies deep, specialized expertise in one or two specific domains, such as Natural Language Processing (NLP), Computer Vision (CV), or Reinforcement Learning (RL). This report is structured to build the wide, sturdy horizontal bar of the 'T' while providing the necessary groundwork to pursue any vertical specialization.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="level-1" class="mb-16 scroll-mt-20">
+                <h2 class="text-3xl font-bold text-slate-800 mb-2">Level 1: The Bedrock - Foundational Knowledge</h2>
+                <p class="text-slate-500 mb-8">This level establishes the indispensable prerequisites for any serious study of machine learning. A firm grasp of these concepts is the key to innovating, debugging, and moving beyond simply calling pre-built library functions.</p>
+                <div class="space-y-4 accordion-container">
+                    <div class="content-card overflow-hidden">
+                        <button class="accordion-header w-full flex justify-between items-center p-5 text-left font-semibold text-slate-700">
+                            <span>Core Mathematical Pillars</span>
+                            <span class="accordion-icon text-indigo-500 transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="p-5 border-t border-slate-200 text-slate-600 space-y-4">
+                                <div>
+                                    <h4 class="font-semibold text-slate-700 mb-2">Linear Algebra: The Language of Data</h4>
+                                    <p>Provides the objects and operations for representing and manipulating data. Datasets are matrices, data points are vectors, and complex datasets can be tensors. Core concepts include Vectors, Matrices, Tensors, Dot Product, Eigenvalues & Eigenvectors, and Singular Value Decomposition (SVD).</p>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-slate-700 mb-2">Calculus: The Engine of Optimization</h4>
+                                    <p>Provides the engine for learning and optimization. Nearly all model training is an optimization problem. Core concepts include Differentiation, Partial Derivatives, The Chain Rule, Gradients, and Gradient Descent.</p>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-slate-700 mb-2">Probability & Distributions: The Framework for Uncertainty</h4>
+                                    <p>Provides the framework for quantifying uncertainty and making predictions. Core concepts include Random Variables, Bayes' Theorem, Normal/Gaussian Distribution, and the Central Limit Theorem.</p>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-slate-700 mb-2">Statistics: The Science of Inference and Evaluation</h4>
+                                    <p>Provides the tools to describe data, make inferences, and rigorously evaluate models. Core concepts include Mean/Median/Mode, Variance, Correlation, Hypothesis Testing, p-values, and Maximum Likelihood Estimation (MLE).</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-card overflow-hidden">
+                         <button class="accordion-header w-full flex justify-between items-center p-5 text-left font-semibold text-slate-700">
+                            <span>Essential Programming & Software Toolkit</span>
+                            <span class="accordion-icon text-indigo-500 transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="p-5 border-t border-slate-200 text-slate-600 space-y-3">
+                                <p><strong class="text-slate-700">Python:</strong> The undisputed lingua franca of machine learning, valued for its simple syntax and powerful library ecosystem.</p>
+                                <p><strong class="text-slate-700">Git & Version Control:</strong> The industry standard for tracking code and experiments, ensuring reproducibility and collaboration.</p>
+                                <p><strong class="text-slate-700">Command-Line Interface (CLI):</strong> A vital practical skill for managing remote servers, cloud instances, and automating workflows.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="level-2" class="mb-16 scroll-mt-20">
+                <h2 class="text-3xl font-bold text-slate-800 mb-2">Level 2: The Practitioner's Core - Applied Machine Learning</h2>
+                <p class="text-slate-500 mb-8">This is where theory meets implementation. Explore the day-to-day skills of an applied ML scientist, from data preprocessing to model evaluation.</p>
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <div class="content-card p-6">
+                        <h3 class="font-bold text-xl text-slate-800 mb-3">Core Python Libraries</h3>
+                        <ul class="list-disc list-inside text-slate-600 space-y-1">
+                            <li><strong>NumPy:</strong> Fundamental package for scientific computing.</li>
+                            <li><strong>Pandas:</strong> Primary library for data manipulation and analysis.</li>
+                            <li><strong>Matplotlib & Seaborn:</strong> Standard for data visualization.</li>
+                            <li><strong>Scikit-learn:</strong> The most comprehensive library for classical ML.</li>
+                        </ul>
+                    </div>
+                    <div class="content-card p-6">
+                        <h3 class="font-bold text-xl text-slate-800 mb-3">Theoretical Cornerstones</h3>
+                        <ul class="list-disc list-inside text-slate-600 space-y-1">
+                            <li><strong>Bias-Variance Tradeoff:</strong> The central challenge of balancing underfitting and overfitting.</li>
+                            <li><strong>Regularization:</strong> Techniques (L1/L2) to combat overfitting.</li>
+                            <li><strong>Cross-Validation:</strong> Robust procedure for model evaluation.</li>
+                            <li><strong>Hyperparameter Tuning:</strong> Finding the optimal model settings.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="content-card p-6 overflow-x-auto">
+                    <h3 class="font-bold text-xl text-slate-800 mb-4">Algorithm Quick Reference</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Algorithm</th>
+                                <th>Type</th>
+                                <th>Key Strengths</th>
+                                <th>When to Use It</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Linear/Logistic Regression</strong></td>
+                                <td>Both</td>
+                                <td>Fast, highly interpretable.</td>
+                                <td>Baseline models, problems where interpretability is key.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>k-Nearest Neighbors (KNN)</strong></td>
+                                <td>Both</td>
+                                <td>Simple, non-parametric.</td>
+                                <td>Simple classification, basic recommendation systems.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Support Vector Machines (SVM)</strong></td>
+                                <td>Both</td>
+                                <td>Effective in high-dimensional spaces.</td>
+                                <td>Text classification, image classification.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Decision Trees</strong></td>
+                                <td>Both</td>
+                                <td>Highly interpretable, can be visualized.</td>
+                                <td>Credit scoring, medical diagnosis, when explainability is required.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Random Forest</strong></td>
+                                <td>Both</td>
+                                <td>Reduces overfitting, robust to outliers.</td>
+                                <td>High-performance classification/regression on tabular data.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Gradient Boosting (XGBoost, etc.)</strong></td>
+                                <td>Both</td>
+                                <td>Often state-of-the-art on tabular data.</td>
+                                <td>Kaggle competitions, fraud detection, ad click-through rate.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Naive Bayes</strong></td>
+                                <td>Classification</td>
+                                <td>Very fast, works well with high-dimensional data.</td>
+                                <td>Spam filtering, text classification, sentiment analysis.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="level-3" class="mb-16 scroll-mt-20">
+                <h2 class="text-3xl font-bold text-slate-800 mb-2">Level 3: The Architect's Domain - Deep Learning</h2>
+                <p class="text-slate-500 mb-8">Enter the world of neural networks, the engine behind modern AI breakthroughs. This section covers the fundamental architectures and the frameworks used to build them.</p>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="content-card p-6">
+                        <h3 class="font-bold text-xl text-slate-800 mb-3">PyTorch vs. TensorFlow</h3>
+                        <p class="text-slate-600 mb-4">A strategic comparison of the two dominant deep learning frameworks.</p>
+                        <div class="space-y-3">
+                            <div>
+                                <h4 class="font-semibold text-slate-700">PyTorch</h4>
+                                <p class="text-sm text-slate-500">Favored in research for its Pythonic feel and flexibility. Ideal for rapid prototyping and cutting-edge models.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-slate-700">TensorFlow (with Keras)</h4>
+                                <p class="text-sm text-slate-500">The standard for production with a mature ecosystem for deploying on any platform (mobile, web, edge).</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-card p-6">
+                        <h3 class="font-bold text-xl text-slate-800 mb-3">The Architectural Zoo</h3>
+                        <p class="text-slate-600 mb-4">Different problems require different architectures. Here are the essentials:</p>
+                        <div class="space-y-3">
+                            <div>
+                                <h4 class="font-semibold text-slate-700">CNNs (Convolutional Neural Networks)</h4>
+                                <p class="text-sm text-slate-500">The go-to for image and grid-like data, using filters to detect features.</p>
+                            </div>
+                             <div>
+                                <h4 class="font-semibold text-slate-700">RNNs/LSTMs (Recurrent Networks)</h4>
+                                <p class="text-sm text-slate-500">Designed for sequential data like text and time series, with a "memory" component.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-slate-700">Transformers</h4>
+                                <p class="text-sm text-slate-500">Revolutionized NLP with the self-attention mechanism; the basis for all modern LLMs.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="level-4" class="mb-16 scroll-mt-20">
+                <h2 class="text-3xl font-bold text-slate-800 mb-2">Level 4: The Specialist's Frontier - Advanced Topics</h2>
+                 <p class="text-slate-500 mb-8">Delve into the specialized domains that define the cutting edge of AI research and application, from optimal decision-making to the generative revolution.</p>
+                <div class="space-y-6">
+                    <div class="content-card p-6">
+                        <h3 class="font-bold text-xl text-slate-800 mb-3">The Generative AI Application Stack</h3>
+                        <p class="text-slate-600 mb-6">This covers the essential skills for building, optimizing, and deploying modern Generative AI applications, moving from foundational models to production-ready systems.</p>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-semibold text-slate-700 mb-2">Retrieval-Augmented Generation (RAG)</h4>
+                                <p class="text-sm text-slate-500">A crucial framework that connects LLMs to external, up-to-date knowledge bases. It works by retrieving relevant information first, then using that context to generate a more accurate and reliable response, significantly reducing hallucinations.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-slate-700 mb-2">Orchestration & Agentic Workflows</h4>
+                                <p class="text-sm text-slate-500">Frameworks for building complex, multi-step AI applications. <strong>LangChain</strong> is for composing linear sequences of tasks, while <strong>LangGraph</strong> enables cyclical, agent-like behaviors where the model can reason and make decisions in a loop.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-slate-700 mb-2">The RAG Toolkit</h4>
+                                <p class="text-sm text-slate-500">Essential supporting technologies, including <strong>Vector Databases</strong> (e.g., Pinecone, Weaviate, Chroma) for efficient similarity search, and <strong>Parameter-Efficient Fine-Tuning (PEFT)</strong> methods like <strong>LoRA</strong> and <strong>QLoRA</strong> to adapt models cost-effectively.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-slate-700 mb-2">LLM Application Evaluation</h4>
+                                <p class="text-sm text-slate-500">Frameworks like <strong>RAGAs</strong> and <strong>TruLens</strong> provide systematic ways to measure the quality of RAG systems, focusing on metrics like Faithfulness, Context Relevance, and Answer Relevance to ensure reliability.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="content-card p-6">
+                            <h3 class="font-bold text-xl text-slate-800 mb-3">Reinforcement Learning (RL)</h3>
+                            <p class="text-slate-600">The science of decision-making through trial and error. An agent learns to take actions in an environment to maximize a cumulative reward. Key concepts include Agent, Environment, Reward, and Policy. Algorithms like Q-Learning and PPO are central.</p>
+                        </div>
+                        <div class="content-card p-6">
+                            <h3 class="font-bold text-xl text-slate-800 mb-3">Graph Neural Networks (GNNs)</h3>
+                            <p class="text-slate-600">A class of neural networks designed to learn directly from graph-structured data, like social networks or molecules. They work via a "message passing" mechanism to understand relationships and connectivity.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="level-5" class="mb-16 scroll-mt-20">
+                <h2 class="text-3xl font-bold text-slate-800 mb-2">Level 5: The Engineer's Mandate - Production & Scale</h2>
+                <p class="text-slate-500 mb-8">A model in a notebook provides no value. This level covers the engineering disciplines required to deploy robust, scalable, and reliable ML systems.</p>
+                <div class="content-card p-6">
+                    <h3 class="font-bold text-xl text-slate-800 mb-4">The MLOps Lifecycle</h3>
+                    <p class="text-slate-600 mb-6">MLOps (Machine Learning Operations) adapts DevOps principles to automate and streamline the entire model lifecycle, from data versioning to production monitoring. Below are key stages and representative tools.</p>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 text-center">
+                        <div class="bg-slate-100 p-4 rounded-lg">
+                            <h4 class="font-semibold text-slate-700">Versioning</h4>
+                            <p class="text-xs text-slate-500">Git, DVC</p>
+                        </div>
+                         <div class="bg-slate-100 p-4 rounded-lg">
+                            <h4 class="font-semibold text-slate-700">Experiment Tracking</h4>
+                            <p class="text-xs text-slate-500">MLflow, W&B</p>
+                        </div>
+                         <div class="bg-slate-100 p-4 rounded-lg">
+                            <h4 class="font-semibold text-slate-700">Orchestration</h4>
+                            <p class="text-xs text-slate-500">Airflow, Kubeflow</p>
+                        </div>
+                         <div class="bg-slate-100 p-4 rounded-lg">
+                            <h4 class="font-semibold text-slate-700">Serving</h4>
+                            <p class="text-xs text-slate-500">BentoML, SageMaker</p>
+                        </div>
+                         <div class="bg-slate-100 p-4 rounded-lg">
+                            <h4 class="font-semibold text-slate-700">Monitoring</h4>
+                            <p class="text-xs text-slate-500">Evidently AI, Fiddler</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="level-6" class="mb-16 scroll-mt-20">
+                <h2 class="text-3xl font-bold text-slate-800 mb-2">Level 6: The Professional's Conscience - Responsible AI</h2>
+                <p class="text-slate-500 mb-8">As AI becomes more pervasive, the ability to build and deploy it responsibly is a core competency. This involves a proactive approach to ethics, fairness, and transparency.</p>
+                 <div class="grid md:grid-cols-2 gap-6">
+                    <div class="content-card p-6">
+                        <h3 class="font-bold text-xl text-slate-800 mb-3">Core Principles</h3>
+                        <ul class="list-disc list-inside text-slate-600 space-y-1">
+                            <li><strong>Fairness & Non-Discrimination:</strong> Systems must treat all groups equitably.</li>
+                            <li><strong>Transparency & Explainability:</strong> The operations of an AI system should be understandable.</li>
+                            <li><strong>Accountability & Human Oversight:</strong> Humans must be responsible for AI systems.</li>
+                            <li><strong>Reliability & Safety:</strong> Systems must be robust and secure from attacks.</li>
+                            <li><strong>Privacy & Security:</strong> Systems must respect user privacy and protect data.</li>
+                        </ul>
+                    </div>
+                    <div class="content-card p-6">
+                        <h3 class="font-bold text-xl text-slate-800 mb-3">Explainable AI (XAI) Techniques</h3>
+                        <p class="text-slate-600">Methods to understand "black-box" models.</p>
+                        <ul class="list-disc list-inside text-slate-600 space-y-1 mt-2">
+                           <li><strong class="text-slate-700">LIME:</strong> Explains single predictions by creating a simple, local model to approximate the complex one.</li>
+                           <li><strong class="text-slate-700">SHAP:</strong> Uses game theory to assign a contribution score to each feature for a particular prediction.</li>
+                           <li><strong class="text-slate-700">Visualization:</strong> Saliency maps (for images) or attention maps (for text) highlight influential parts of the input.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="conclusion" class="mb-16 scroll-mt-20">
+                <h2 class="text-3xl font-bold text-slate-800 mb-2">Conclusion: The Curated Mastery Checklist</h2>
+                <p class="text-slate-500 mb-8">An actionable roadmap and self-assessment tool for your job market preparation, structured by the levels of mastery.</p>
+                <div class="content-card p-6 checklist text-slate-600">
+                    <h3 class="font-bold text-xl text-slate-800 mb-4">Level 1: Foundational Knowledge</h3>
+                    <ul>
+                        <li><strong>Core Mathematical Pillars:</strong> Linear Algebra, Calculus, Probability & Distributions, Statistics.</li>
+                        <li><strong>Essential Programming & Software Toolkit:</strong> Python, Git, Command-Line Interface (CLI).</li>
+                    </ul>
+
+                    <h3 class="font-bold text-xl text-slate-800 mt-6 mb-4">Level 2: The Practitioner's Core</h3>
+                    <ul>
+                        <li><strong>ML Project Lifecycle:</strong> Understand all stages from problem formulation to monitoring.</li>
+                        <li><strong>Core Python Libraries:</strong> NumPy, Pandas, Matplotlib, Seaborn, Scikit-learn.</li>
+                        <li><strong>Data Preprocessing & Feature Engineering:</strong> Scaling, Encoding, Selection, Creation.</li>
+                        <li><strong>Paradigms of Learning:</strong> Supervised, Unsupervised, Semi-Supervised, Self-Supervised.</li>
+                        <li><strong>Supervised Learning Algorithms:</strong> Linear/Logistic Regression, SVM, KNN, Decision Trees, Ensemble Methods (Random Forest, Gradient Boosting).</li>
+                        <li><strong>Unsupervised Learning Algorithms:</strong> Clustering (K-Means, DBSCAN), Dimensionality Reduction (PCA, t-SNE).</li>
+                        <li><strong>Model Evaluation:</strong> Bias-Variance Tradeoff, Regularization, Cross-Validation, Metrics (MSE, MAE, Accuracy, Precision, Recall, F1-Score, AUC).</li>
+                    </ul>
+
+                    <h3 class="font-bold text-xl text-slate-800 mt-6 mb-4">Level 3: The Architect's Domain - Deep Learning</h3>
+                    <ul>
+                        <li><strong>Fundamentals of Neural Networks:</strong> Neuron, Layers, Weights & Biases, Activation Functions, Forward/Backpropagation, Loss Functions, Optimizers.</li>
+                        <li><strong>Deep Learning Frameworks:</strong> PyTorch, TensorFlow (with Keras).</li>
+                        <li><strong>Deep Learning Architectures:</strong> CNNs, RNNs, LSTMs, Transformers, Self-Attention.</li>
+                    </ul>
+
+                    <h3 class="font-bold text-xl text-slate-800 mt-6 mb-4">Level 4: The Specialist's Frontier - Advanced Topics</h3>
+                    <ul>
+                        <li><strong>Reinforcement Learning (RL):</strong> MDPs, Q-Learning, DQN, Policy Gradients, Actor-Critic Methods (PPO).</li>
+                        <li><strong>Graph Neural Networks (GNNs):</strong> Message Passing, GCNs, GATs.</li>
+                        <li><strong>The Generative AI Application Stack:</strong>
+                            <ul>
+                                <li><strong>Foundational Models:</strong> LLMs (GPT series, Llama), Diffusion Models (Stable Diffusion), GANs.</li>
+                                <li><strong>Advanced Prompt Engineering:</strong> Few-Shot, Chain-of-Thought (CoT), Tree-of-Thought (ToT).</li>
+                                <li><strong>Retrieval-Augmented Generation (RAG):</strong> Core concepts of Retrieval, Augmentation, Generation.</li>
+                                <li><strong>Orchestration & Agentic Workflows:</strong> LangChain, LlamaIndex, LangGraph, Haystack.</li>
+                                <li><strong>The RAG Toolkit:</strong> Vector Databases (Pinecone, Weaviate, Chroma), PEFT (LoRA, QLoRA).</li>
+                                <li><strong>LLM Application Evaluation:</strong> Metrics (Faithfulness, Relevance), Frameworks (RAGAs, TruLens).</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h3 class="font-bold text-xl text-slate-800 mt-6 mb-4">Level 5: The Engineer's Mandate - Production & Scalability</h3>
+                    <ul>
+                        <li><strong>Big Data Technology:</strong> Apache Spark, Spark MLlib.</li>
+                        <li><strong>MLOps Concepts:</strong> CI/CD for ML, Reproducibility, Scalability, Monitoring.</li>
+                        <li><strong>MLOps Toolkit:</strong> Version Control (DVC), Experiment Tracking (MLflow, W&B), Orchestration (Airflow, Kubeflow), Serving (BentoML, SageMaker), Monitoring (Evidently AI).</li>
+                    </ul>
+
+                    <h3 class="font-bold text-xl text-slate-800 mt-6 mb-4">Level 6: The Professional's Conscience - Responsible AI</h3>
+                    <ul>
+                        <li><strong>Core Principles of AI Ethics:</strong> Fairness, Transparency, Accountability, Safety, Privacy.</li>
+                        <li><strong>Techniques for Fairness:</strong> Pre-processing (Re-sampling), In-processing (Adversarial Debiasing), Post-processing (Equalized Odds).</li>
+                        <li><strong>Techniques for Explainable AI (XAI):</strong> LIME, SHAP, Saliency/Attention Maps.</li>
+                        <li><strong>Data Governance:</strong> Datasheets for Datasets.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <footer class="text-center mt-20 py-8 border-t border-slate-200">
+                <p class="text-slate-500">A comprehensive reference guide to mastering Machine Learning.</p>
+            </footer>
+
+        </main>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // --- Navigation Logic ---
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const mobileNavToggle = document.getElementById('mobile-nav-toggle');
+    const sidebar = document.getElementById('sidebar');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').substring(1) === entry.target.id) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+        });
+    }, { rootMargin: "-30% 0px -70% 0px" });
+
+    sections.forEach(section => {
+        observer.observe(section);
+    });
+
+    mobileNavToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('-translate-x-full');
+    });
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+             if (!sidebar.classList.contains('-translate-x-full')) {
+                 sidebar.classList.add('-translate-x-full');
+             }
+        });
+    });
+    
+    // --- Accordion Logic ---
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const content = header.nextElementSibling;
+            const icon = header.querySelector('.accordion-icon');
+            const isExpanded = content.style.maxHeight && content.style.maxHeight!== '0px';
+
+            // Close all accordions
+            document.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = null);
+            document.querySelectorAll('.accordion-icon').forEach(i => i.style.transform = 'rotate(0deg)');
+            
+            if (!isExpanded) {
+                content.style.maxHeight = content.scrollHeight + "px";
+                icon.style.transform = 'rotate(180deg)';
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>
