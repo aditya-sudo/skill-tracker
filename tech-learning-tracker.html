@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Skills Learning Tracker 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #22d3ee;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f1f5f9;
+            --border: #e2e8f0;
+            --text: #334155;
+            --text-light: #64748b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: var(--light);
+            border-bottom: 2px solid var(--border);
+            overflow-x: auto;
+            scrollbar-width: thin;
+        }
+
+        .nav-tab {
+            padding: 15px 25px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text);
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-tab:hover {
+            background: white;
+            color: var(--primary);
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: var(--primary);
+        }
+
+        .nav-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary);
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .search-filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        .filter-btn {
+            padding: 12px 20px;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .category-section {
+            margin-bottom: 30px;
+            background: var(--light);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .category-header {
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .category-header:hover {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0.08) 100%);
+        }
+
+        .category-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-progress {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-bar {
+            width: 150px;
+            height: 8px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success) 0%, var(--secondary) 100%);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            font-weight: 600;
+            color: var(--text);
+            min-width: 45px;
+            text-align: right;
+        }
+
+        .category-content {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .category-content.expanded {
+            max-height: 2000px;
+            padding: 20px;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .skill-card {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .skill-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: var(--primary);
+        }
+
+        .skill-card.completed {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(34, 211, 238, 0.1) 100%);
+            border-color: var(--success);
+        }
+
+        .skill-card.in-progress {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(251, 191, 36, 0.1) 100%);
+            border-color: var(--warning);
+        }
+
+        .skill-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .skill-name {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+
+        .skill-status {
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-not-started {
+            background: var(--light);
+            color: var(--text-light);
+        }
+
+        .status-in-progress {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .status-completed {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .skill-progress {
+            margin-top: 10px;
+        }
+
+        .skill-progress-bar {
+            height: 6px;
+            background: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .skill-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .skill-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 8px;
+        }
+
+        .skill-order {
+            background: var(--primary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .skill-level {
+            margin: 8px 0;
+        }
+
+        .level-badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .level-badge.beginner {
+            background: rgba(34, 197, 94, 0.2);
+            color: #059669;
+        }
+
+        .level-badge.beginner-intermediate {
+            background: rgba(251, 191, 36, 0.2);
+            color: #d97706;
+        }
+
+        .level-badge.intermediate {
+            background: rgba(245, 158, 11, 0.2);
+            color: #d97706;
+        }
+
+        .level-badge.intermediate-advanced {
+            background: rgba(239, 68, 68, 0.2);
+            color: #dc2626;
+        }
+
+        .level-badge.advanced {
+            background: rgba(147, 51, 234, 0.2);
+            color: #9333ea;
+        }
+
+        .phase-level {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-left: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+            padding: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: var(--danger);
+            transform: rotate(90deg);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--light);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .floating-btn:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.5);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .chevron-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .category-header.expanded .chevron-icon {
+            transform: rotate(180deg);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .stats-bar {
+                width: 100%;
+                justify-content: space-around;
+            }
+            
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-tabs {
+                overflow-x: scroll;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                </svg>
+                Tech Interview Prep Tracker 2025
+            </h1>
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-value" id="totalSkills">0</span>
+                    <span class="stat-label">Total Skills</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="completedSkills">0</span>
+                    <span class="stat-label">Completed</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="overallProgress">0%</span>
+                    <span class="stat-label">Progress</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="sequential">Sequential Learning Path</button>
+            <button class="nav-tab" data-tab="beginner">Beginner Level</button>
+            <button class="nav-tab" data-tab="intermediate">Intermediate Level</button>
+            <button class="nav-tab" data-tab="advanced">Advanced Level</button>
+            <button class="nav-tab" data-tab="roadmap">Learning Roadmap</button>
+        </div>
+
+        <div class="content">
+            <div class="search-filter-bar">
+                <div class="search-box">
+                    <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Search skills, topics, or keywords...">
+                </div>
+                <button class="filter-btn" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="not-started">Not Started</button>
+                <button class="filter-btn" data-filter="in-progress">In Progress</button>
+                <button class="filter-btn" data-filter="completed">Completed</button>
+            </div>
+
+            <div id="skillsContainer"></div>
+        </div>
+    </div>
+
+    <button class="floating-btn" id="addSkillBtn">+</button>
+
+    <div class="modal" id="skillModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Update Skill Progress</h2>
+                <button class="close-btn" id="closeModal">×</button>
+            </div>
+            <form id="skillForm">
+                <div class="form-group">
+                    <label class="form-label">Skill Name</label>
+                    <input type="text" class="form-input" id="skillName" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" id="skillStatus">
+                        <option value="not-started">Not Started</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Progress (%)</label>
+                    <input type="range" class="form-input" id="skillProgress" min="0" max="100" value="0">
+                    <div style="text-align: center; margin-top: 5px;">
+                        <span id="progressValue">0%</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-textarea" id="skillNotes" placeholder="Add your learning notes, resources, or reminders..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Last Updated</label>
+                    <input type="date" class="form-input" id="lastUpdated">
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Progress</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        'use strict';
+        
+        // Sequential learning path from beginner to advanced
+        const sequentialSkills = [
+            // PHASE 1: Programming Fundamentals (Beginner)
+            { skill: "Python (Syntax, OOP, Core Libraries)", level: "Beginner", phase: "Programming Fundamentals" },
+            { skill: "JavaScript/TypeScript (ES6+, async/await)", level: "Beginner", phase: "Programming Fundamentals" },
+            { skill: "Git (Branching, Merging, Rebasing)", level: "Beginner", phase: "Programming Fundamentals" },
+            { skill: "Big O Notation & Complexity", level: "Beginner", phase: "Programming Fundamentals" },
+            { skill: "OOP Principles (SOLID)", level: "Beginner", phase: "Programming Fundamentals" },
+            
+            // PHASE 2: Basic Data Structures (Beginner)
+            { skill: "Arrays & Strings", level: "Beginner", phase: "Basic Data Structures" },
+            { skill: "Hashmaps/Hash Tables", level: "Beginner", phase: "Basic Data Structures" },
+            { skill: "Linked Lists", level: "Beginner", phase: "Basic Data Structures" },
+            { skill: "Stacks & Queues", level: "Beginner", phase: "Basic Data Structures" },
+            { skill: "Basic Probability", level: "Beginner", phase: "Basic Data Structures" },
+            
+            // PHASE 3: Basic Algorithms (Beginner-Intermediate)
+            { skill: "Two Pointers", level: "Beginner-Intermediate", phase: "Basic Algorithms" },
+            { skill: "Binary Search", level: "Beginner-Intermediate", phase: "Basic Algorithms" },
+            { skill: "Sliding Window", level: "Beginner-Intermediate", phase: "Basic Algorithms" },
+            { skill: "Merge Sort & Quick Sort", level: "Beginner-Intermediate", phase: "Basic Algorithms" },
+            { skill: "Fast & Slow Pointers", level: "Beginner-Intermediate", phase: "Basic Algorithms" },
+            
+            // PHASE 4: Essential LeetCode Problems (Beginner-Intermediate)
+            { skill: "Two Sum & Three Sum", level: "Beginner-Intermediate", phase: "Essential Problems" },
+            { skill: "Valid Palindrome", level: "Beginner-Intermediate", phase: "Essential Problems" },
+            { skill: "Valid Parentheses", level: "Beginner-Intermediate", phase: "Essential Problems" },
+            { skill: "Reverse Linked List", level: "Beginner-Intermediate", phase: "Essential Problems" },
+            { skill: "Merge Two Sorted Lists", level: "Beginner-Intermediate", phase: "Essential Problems" },
+            { skill: "Maximum Depth", level: "Beginner-Intermediate", phase: "Essential Problems" },
+            { skill: "Same Tree", level: "Beginner-Intermediate", phase: "Essential Problems" },
+            { skill: "Invert Binary Tree", level: "Beginner-Intermediate", phase: "Essential Problems" },
+            
+            // PHASE 5: Trees and Graphs (Intermediate)
+            { skill: "Trees (Binary, BST)", level: "Intermediate", phase: "Trees and Graphs" },
+            { skill: "Tree Traversal (Inorder, Preorder, Postorder)", level: "Intermediate", phase: "Trees and Graphs" },
+            { skill: "Graphs (BFS, DFS)", level: "Intermediate", phase: "Trees and Graphs" },
+            { skill: "Graph Traversal (BFS, DFS)", level: "Intermediate", phase: "Trees and Graphs" },
+            { skill: "Heaps/Priority Queues", level: "Intermediate", phase: "Trees and Graphs" },
+            
+            // PHASE 6: Intermediate Problems (Intermediate)
+            { skill: "Product of Array Except Self", level: "Intermediate", phase: "Intermediate Problems" },
+            { skill: "Container With Most Water", level: "Intermediate", phase: "Intermediate Problems" },
+            { skill: "Longest Substring Without Repeating", level: "Intermediate", phase: "Intermediate Problems" },
+            { skill: "Search Rotated Sorted Array", level: "Intermediate", phase: "Intermediate Problems" },
+            { skill: "Detect Cycle", level: "Intermediate", phase: "Intermediate Problems" },
+            { skill: "Lowest Common Ancestor", level: "Intermediate", phase: "Intermediate Problems" },
+            { skill: "Number of Islands", level: "Intermediate", phase: "Intermediate Problems" },
+            { skill: "Clone Graph", level: "Intermediate", phase: "Intermediate Problems" },
+            
+            // PHASE 7: Advanced Data Structures (Intermediate-Advanced)
+            { skill: "Tries", level: "Intermediate-Advanced", phase: "Advanced Data Structures" },
+            { skill: "Union Find", level: "Intermediate-Advanced", phase: "Advanced Data Structures" },
+            { skill: "Implement Trie", level: "Intermediate-Advanced", phase: "Advanced Data Structures" },
+            { skill: "LRU Cache Implementation", level: "Intermediate-Advanced", phase: "Advanced Data Structures" },
+            { skill: "Serialize/Deserialize Tree", level: "Intermediate-Advanced", phase: "Advanced Data Structures" },
+            
+            // PHASE 8: Dynamic Programming (Advanced)
+            { skill: "Climbing Stairs", level: "Advanced", phase: "Dynamic Programming" },
+            { skill: "House Robber", level: "Advanced", phase: "Dynamic Programming" },
+            { skill: "Coin Change", level: "Advanced", phase: "Dynamic Programming" },
+            { skill: "Longest Common Subsequence", level: "Advanced", phase: "Dynamic Programming" },
+            { skill: "Edit Distance", level: "Advanced", phase: "Dynamic Programming" },
+            { skill: "0/1 Knapsack", level: "Advanced", phase: "Dynamic Programming" },
+            { skill: "Dynamic Programming", level: "Advanced", phase: "Dynamic Programming" },
+            
+            // PHASE 9: Advanced Algorithms (Advanced)
+            { skill: "Backtracking", level: "Advanced", phase: "Advanced Algorithms" },
+            { skill: "Greedy Algorithms", level: "Advanced", phase: "Advanced Algorithms" },
+            { skill: "Topological Sort", level: "Advanced", phase: "Advanced Algorithms" },
+            { skill: "Course Schedule (Topological Sort)", level: "Advanced", phase: "Advanced Algorithms" },
+            { skill: "Bit Manipulation", level: "Advanced", phase: "Advanced Algorithms" },
+            
+            // PHASE 10: Complex Problems (Advanced)
+            { skill: "Trapping Rain Water", level: "Advanced", phase: "Complex Problems" },
+            { skill: "Minimum Window Substring", level: "Advanced", phase: "Complex Problems" },
+            { skill: "Sliding Window Maximum", level: "Advanced", phase: "Complex Problems" },
+            { skill: "Largest Rectangle in Histogram", level: "Advanced", phase: "Complex Problems" },
+            { skill: "Word Search II", level: "Advanced", phase: "Complex Problems" },
+            { skill: "Merge K Sorted Lists", level: "Advanced", phase: "Complex Problems" },
+            { skill: "Median from Data Stream", level: "Advanced", phase: "Complex Problems" },
+            { skill: "N-Queens", level: "Advanced", phase: "Complex Problems" },
+            { skill: "Alien Dictionary", level: "Advanced", phase: "Complex Problems" },
+            
+            // PHASE 11: System Design Basics (Intermediate)
+            { skill: "SQL (Queries, Joins, Optimization)", level: "Intermediate", phase: "System Design Basics" },
+            { skill: "Database Design (SQL vs NoSQL)", level: "Intermediate", phase: "System Design Basics" },
+            { skill: "API Design (REST, GraphQL)", level: "Intermediate", phase: "System Design Basics" },
+            { skill: "Caching (Redis, Memcached)", level: "Intermediate", phase: "System Design Basics" },
+            { skill: "Load Balancers & Reverse Proxies", level: "Intermediate", phase: "System Design Basics" },
+            
+            // PHASE 12: Advanced System Design (Advanced)
+            { skill: "Horizontal vs Vertical Scaling", level: "Advanced", phase: "Advanced System Design" },
+            { skill: "Database Sharding & Replication", level: "Advanced", phase: "Advanced System Design" },
+            { skill: "Microservices vs Monolithic", level: "Advanced", phase: "Advanced System Design" },
+            { skill: "Message Queues (Kafka, RabbitMQ)", level: "Advanced", phase: "Advanced System Design" },
+            { skill: "CDN (Content Delivery Networks)", level: "Advanced", phase: "Advanced System Design" },
+            { skill: "Consistent Hashing", level: "Advanced", phase: "Advanced System Design" },
+            { skill: "CAP Theorem", level: "Advanced", phase: "Advanced System Design" },
+            { skill: "Rate Limiting", level: "Advanced", phase: "Advanced System Design" },
+            { skill: "Distributed Systems Basics", level: "Advanced", phase: "Advanced System Design" },
+            
+            // PHASE 13: System Design Cases (Advanced)
+            { skill: "Design URL Shortener", level: "Advanced", phase: "System Design Cases" },
+            { skill: "Design Twitter/Social Feed", level: "Advanced", phase: "System Design Cases" },
+            { skill: "Design WhatsApp/Chat System", level: "Advanced", phase: "System Design Cases" },
+            { skill: "Design Uber/Ride Sharing", level: "Advanced", phase: "System Design Cases" },
+            { skill: "Design YouTube/Video Streaming", level: "Advanced", phase: "System Design Cases" },
+            { skill: "Design Distributed Cache", level: "Advanced", phase: "System Design Cases" },
+            { skill: "Design Search Autocomplete", level: "Advanced", phase: "System Design Cases" },
+            { skill: "Design Payment System", level: "Advanced", phase: "System Design Cases" },
+            
+            // PHASE 14: Professional Skills (All Levels)
+            { skill: "Clean Code Principles", level: "Intermediate", phase: "Professional Skills" },
+            { skill: "Design Patterns (Factory, Singleton, Observer)", level: "Intermediate", phase: "Professional Skills" },
+            { skill: "Unit Testing & TDD", level: "Intermediate", phase: "Professional Skills" },
+            { skill: "Code Review Best Practices", level: "Intermediate", phase: "Professional Skills" },
+            { skill: "Docker & Containerization", level: "Intermediate", phase: "Professional Skills" },
+            { skill: "CI/CD Concepts", level: "Intermediate", phase: "Professional Skills" },
+            { skill: "AWS Core Services (EC2, S3, RDS, Lambda)", level: "Advanced", phase: "Professional Skills" },
+            { skill: "Kubernetes Basics", level: "Advanced", phase: "Professional Skills" },
+            { skill: "Monitoring & Logging", level: "Advanced", phase: "Professional Skills" },
+            { skill: "Security Best Practices", level: "Advanced", phase: "Professional Skills" },
+            
+            // PHASE 15: Behavioral & Interview Prep (All Levels)
+            { skill: "STAR Method Mastery", level: "Beginner", phase: "Interview Skills" },
+            { skill: "5-8 Core Stories Prepared", level: "Beginner", phase: "Interview Skills" },
+            { skill: "ATS-Optimized Resume", level: "Beginner", phase: "Interview Skills" },
+            { skill: "LinkedIn Profile Optimization", level: "Beginner", phase: "Interview Skills" },
+            { skill: "GitHub Portfolio (3-4 Quality Projects)", level: "Intermediate", phase: "Interview Skills" },
+            { skill: "Leadership Story", level: "Intermediate", phase: "Interview Skills" },
+            { skill: "Conflict Resolution Story", level: "Intermediate", phase: "Interview Skills" },
+            { skill: "Failure & Learning Story", level: "Intermediate", phase: "Interview Skills" },
+            { skill: "Innovation/Initiative Story", level: "Intermediate", phase: "Interview Skills" },
+            { skill: "Team Collaboration Story", level: "Intermediate", phase: "Interview Skills" },
+            { skill: "Challenging Project Story", level: "Intermediate", phase: "Interview Skills" },
+            { skill: "Explaining Technical Concepts Simply", level: "Intermediate", phase: "Interview Skills" },
+            { skill: "Thinking Out Loud", level: "Intermediate", phase: "Interview Skills" },
+            { skill: "Asking Clarifying Questions", level: "Intermediate", phase: "Interview Skills" },
+            { skill: "Daily LeetCode (1-2 problems)", level: "Intermediate", phase: "Interview Skills" },
+            { skill: "Weekly System Design Practice", level: "Advanced", phase: "Interview Skills" },
+            { skill: "Mock Interviews (Pramp/Interviewing.io)", level: "Advanced", phase: "Interview Skills" },
+            { skill: "Time-boxed Problem Solving", level: "Advanced", phase: "Interview Skills" },
+            { skill: "Technical Phone Screen Prep", level: "Advanced", phase: "Interview Skills" },
+            { skill: "Onsite Interview Strategy", level: "Advanced", phase: "Interview Skills" },
+            { skill: "Virtual Interview Setup", level: "Advanced", phase: "Interview Skills" },
+            { skill: "Whiteboard Coding Practice", level: "Advanced", phase: "Interview Skills" },
+            { skill: "Research Market Rates (levels.fyi)", level: "Advanced", phase: "Interview Skills" },
+            { skill: "Total Compensation Understanding", level: "Advanced", phase: "Interview Skills" },
+            { skill: "Negotiation Scripts", level: "Advanced", phase: "Interview Skills" },
+            { skill: "Multiple Offer Management", level: "Advanced", phase: "Interview Skills" },
+            
+            // PHASE 16: Advanced Topics (Optional - Advanced)
+            { skill: "Java (OOP, Collections, Concurrency)", level: "Advanced", phase: "Advanced Topics" },
+            { skill: "Permutations & Combinations", level: "Advanced", phase: "Advanced Topics" },
+            { skill: "Matrix Operations", level: "Advanced", phase: "Advanced Topics" },
+            { skill: "Longest Consecutive Sequence", level: "Advanced", phase: "Advanced Topics" },
+            { skill: "Daily Temperatures", level: "Advanced", phase: "Advanced Topics" },
+            { skill: "Find Minimum in Rotated Array", level: "Advanced", phase: "Advanced Topics" },
+            { skill: "Search 2D Matrix", level: "Advanced", phase: "Advanced Topics" },
+            { skill: "Kth Largest Element", level: "Advanced", phase: "Advanced Topics" },
+            { skill: "Subsets & Permutations", level: "Advanced", phase: "Advanced Topics" },
+            { skill: "Word Search", level: "Advanced", phase: "Advanced Topics" },
+            { skill: "Merge Intervals", level: "Advanced", phase: "Advanced Topics" },
+            { skill: "Meeting Rooms II", level: "Advanced", phase: "Advanced Topics" },
+            { skill: "Single Number", level: "Advanced", phase: "Advanced Topics" },
+            { skill: "Counting Bits", level: "Advanced", phase: "Advanced Topics" },
+            { skill: "Cover Letter Templates", level: "Beginner", phase: "Advanced Topics" },
+            { skill: "Trade-off Discussions", level: "Advanced", phase: "Advanced Topics" },
+            { skill: "Company Values Alignment", level: "Advanced", phase: "Advanced Topics" },
+            { skill: "Role-Specific Preparation", level: "Advanced", phase: "Advanced Topics" },
+            { skill: "Questions to Ask Interviewer", level: "Advanced", phase: "Advanced Topics" },
+            { skill: "Time Management in Interviews", level: "Advanced", phase: "Advanced Topics" },
+            { skill: "Handling Ambiguity", level: "Advanced", phase: "Advanced Topics" },
+            { skill: "Demonstrating Impact", level: "Advanced", phase: "Advanced Topics" }
+        ];
+
+        // Group skills by phase for organized display
+        const skillsByPhase = {};
+        sequentialSkills.forEach(item => {
+            if (!skillsByPhase[item.phase]) {
+                skillsByPhase[item.phase] = [];
+            }
+            skillsByPhase[item.phase].push(item);
+        });
+
+        // Legacy structure for backward compatibility
+        const skillsData = {
+            sequential: {
+                title: "Sequential Learning Path",
+                icon: "📚",
+                skills: sequentialSkills.map(item => item.skill)
+            }
+        };
+
+        // Initialize local storage
+        let userProgress = {};
+        try {
+            userProgress = JSON.parse(localStorage.getItem('techSkillsProgress')) || {};
+        } catch(e) {
+            userProgress = {};
+        }
+        
+        let currentTab = 'sequential';
+        let currentFilter = 'all';
+        let currentSkill = null;
+
+        // Initialize the app
+        function init() {
+            loadSkills();
+            updateStats();
+            setupEventListeners();
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Tab navigation
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                    e.target.classList.add('active');
+                    currentTab = e.target.dataset.tab;
+                    loadSkills();
+                });
+            });
+
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    currentFilter = e.target.dataset.filter;
+                    loadSkills();
+                });
+            });
+
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                filterSkills(searchTerm);
+            });
+
+            // Modal controls
+            document.getElementById('closeModal').addEventListener('click', closeModal);
+            document.getElementById('cancelBtn').addEventListener('click', closeModal);
+            document.getElementById('addSkillBtn').addEventListener('click', () => {
+                alert('Custom skill addition coming soon! For now, select from existing skills.');
+            });
+
+            // Progress slider
+            document.getElementById('skillProgress').addEventListener('input', (e) => {
+                document.getElementById('progressValue').textContent = e.value + '%';
+                
+                // Auto-update status based on progress
+                const status = document.getElementById('skillStatus');
+                if (e.value == 0) {
+                    status.value = 'not-started';
+                } else if (e.value == 100) {
+                    status.value = 'completed';
+                } else {
+                    status.value = 'in-progress';
+                }
+            });
+
+            // Form submission
+            document.getElementById('skillForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                saveSkillProgress();
+            });
+
+            // Click outside modal to close
+            document.getElementById('skillModal').addEventListener('click', (e) => {
+                if (e.target.id === 'skillModal') {
+                    closeModal();
+                }
+            });
+        }
+
+        // Load and display skills
+        function loadSkills() {
+            const container = document.getElementById('skillsContainer');
+            container.innerHTML = '';
+
+            if (currentTab === 'roadmap') {
+                displayRoadmap(container);
+                return;
+            }
+
+            if (currentTab === 'sequential') {
+                displaySequentialSkills(container);
+                return;
+            }
+
+            // Filter by level
+            let skillsToShow = [];
+            if (currentTab === 'beginner') {
+                skillsToShow = sequentialSkills.filter(item => item.level === 'Beginner');
+            } else if (currentTab === 'intermediate') {
+                skillsToShow = sequentialSkills.filter(item => 
+                    item.level === 'Intermediate' || item.level === 'Beginner-Intermediate'
+                );
+            } else if (currentTab === 'advanced') {
+                skillsToShow = sequentialSkills.filter(item => 
+                    item.level === 'Advanced' || item.level === 'Intermediate-Advanced'
+                );
+            }
+
+            if (skillsToShow.length > 0) {
+                displayLevelSkills(container, skillsToShow, currentTab);
+            } else {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                        <h3>No skills found</h3>
+                        <p>Try adjusting your filters or search terms</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Display sequential learning path
+        function displaySequentialSkills(container) {
+            const phases = [
+                "Programming Fundamentals", "Basic Data Structures", "Basic Algorithms", 
+                "Essential Problems", "Trees and Graphs", "Intermediate Problems",
+                "Advanced Data Structures", "Dynamic Programming", "Advanced Algorithms",
+                "Complex Problems", "System Design Basics", "Advanced System Design",
+                "System Design Cases", "Professional Skills", "Interview Skills", "Advanced Topics"
+            ];
+
+            phases.forEach(phase => {
+                if (skillsByPhase[phase]) {
+                    const phaseSection = createPhaseSection(phase, skillsByPhase[phase]);
+                    container.appendChild(phaseSection);
+                }
+            });
+        }
+
+        // Display skills by level
+        function displayLevelSkills(container, skillsToShow, level) {
+            const levelTitle = level.charAt(0).toUpperCase() + level.slice(1) + ' Level Skills';
+            const section = document.createElement('div');
+            section.className = 'category-section';
+            
+            const skillsData = groupSkillsByPhase(skillsToShow);
+            const progress = calculateSequentialProgress(skillsToShow);
+            
+            section.innerHTML = `
+                <div class="category-header expanded">
+                    <div class="category-title">
+                        <span>🎯</span>
+                        <span>${levelTitle}</span>
+                        <svg class="chevron-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="category-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progress}%"></div>
+                        </div>
+                        <span class="progress-text">${progress}%</span>
+                    </div>
+                </div>
+                <div class="category-content expanded">
+                    <div class="skills-grid" id="grid-${level}"></div>
+                </div>
+            `;
+
+            const grid = section.querySelector(`#grid-${level}`);
+            skillsToShow.forEach((item, index) => {
+                const card = createSequentialSkillCard(item, index);
+                if (card) {
+                    grid.appendChild(card);
+                }
+            });
+
+            container.appendChild(section);
+        }
+
+        // Create phase section for sequential learning
+        function createPhaseSection(phaseName, phaseSkills) {
+            const section = document.createElement('div');
+            section.className = 'category-section';
+            section.setAttribute('data-phase', phaseName);
+            
+            const progress = calculateSequentialProgress(phaseSkills);
+            const levelIcon = getLevelIcon(phaseSkills[0]?.level);
+            
+            section.innerHTML = `
+                <div class="category-header" data-phase="${phaseName}">
+                    <div class="category-title">
+                        <span>${levelIcon}</span>
+                        <span>${phaseName}</span>
+                        <span class="phase-level">(${phaseSkills[0]?.level})</span>
+                        <svg class="chevron-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="category-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progress}%"></div>
+                        </div>
+                        <span class="progress-text">${progress}%</span>
+                    </div>
+                </div>
+                <div class="category-content" id="content-${phaseName.replace(/\s+/g, '-')}">
+                    <div class="skills-grid" id="grid-${phaseName.replace(/\s+/g, '-')}"></div>
+                </div>
+            `;
+
+            // Add toggle functionality
+            section.querySelector('.category-header').addEventListener('click', function() {
+                this.classList.toggle('expanded');
+                const content = section.querySelector('.category-content');
+                content.classList.toggle('expanded');
+            });
+
+            // Add skill cards to grid
+            const grid = section.querySelector(`#grid-${phaseName.replace(/\s+/g, '-')}`);
+            phaseSkills.forEach((item, index) => {
+                const card = createSequentialSkillCard(item, index);
+                if (card) {
+                    grid.appendChild(card);
+                }
+            });
+
+            return section;
+        }
+
+        // Create sequential skill card with order number
+        function createSequentialSkillCard(skillItem, index) {
+            const skillId = `sequential-${skillItem.skill.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-')}`;
+            const skillData = userProgress[skillId] || { status: 'not-started', progress: 0 };
+            
+            // Apply filter
+            if (currentFilter !== 'all' && skillData.status !== currentFilter) {
+                return null;
+            }
+
+            const card = document.createElement('div');
+            card.className = `skill-card ${skillData.status === 'completed' ? 'completed' : skillData.status === 'in-progress' ? 'in-progress' : ''}`;
+            card.setAttribute('data-skill', skillId);
+            card.setAttribute('data-name', skillItem.skill);
+            card.setAttribute('data-level', skillItem.level);
+            
+            const orderNumber = sequentialSkills.findIndex(item => item.skill === skillItem.skill) + 1;
+            
+            card.innerHTML = `
+                <div class="skill-header">
+                    <div class="skill-order">#${orderNumber}</div>
+                    <div class="skill-name">${skillItem.skill}</div>
+                    <span class="skill-status status-${skillData.status}">
+                        ${skillData.status.replace('-', ' ')}
+                    </span>
+                </div>
+                <div class="skill-level">
+                    <span class="level-badge ${skillItem.level.toLowerCase().replace('-', ' ')}">${skillItem.level}</span>
+                </div>
+                <div class="skill-progress">
+                    <div class="skill-progress-bar">
+                        <div class="skill-progress-fill" style="width: ${skillData.progress}%"></div>
+                    </div>
+                </div>
+                <div class="skill-meta">
+                    <span>${skillData.progress}% Complete</span>
+                    <span>${skillData.lastUpdated || 'Not started'}</span>
+                </div>
+            `;
+
+            // Add click event listener
+            card.addEventListener('click', function() {
+                openSkillModal(skillId, skillItem.skill);
+            });
+
+            return card;
+        }
+
+        // Get level icon
+        function getLevelIcon(level) {
+            switch(level) {
+                case 'Beginner': return '🌱';
+                case 'Beginner-Intermediate': return '🌿';
+                case 'Intermediate': return '🌳';
+                case 'Intermediate-Advanced': return '🎯';
+                case 'Advanced': return '🚀';
+                default: return '📚';
+            }
+        }
+
+        // Calculate progress for sequential skills
+        function calculateSequentialProgress(skills) {
+            let totalProgress = 0;
+            let count = 0;
+            
+            skills.forEach(item => {
+                const skillId = `sequential-${item.skill.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-')}`;
+                const skillData = userProgress[skillId];
+                if (skillData) {
+                    totalProgress += skillData.progress;
+                }
+                count++;
+            });
+            
+            return count > 0 ? Math.round(totalProgress / count) : 0;
+        }
+
+        // Create category section
+        function createCategorySection(categoryKey, category) {
+            const section = document.createElement('div');
+            section.className = 'category-section';
+            section.setAttribute('data-category-key', categoryKey);
+            
+            const progress = calculateCategoryProgress(category.skills, categoryKey);
+            
+            section.innerHTML = `
+                <div class="category-header" data-category="${categoryKey}">
+                    <div class="category-title">
+                        <span>${category.icon}</span>
+                        <span>${category.title}</span>
+                        <svg class="chevron-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="category-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progress}%"></div>
+                        </div>
+                        <span class="progress-text">${progress}%</span>
+                    </div>
+                </div>
+                <div class="category-content" id="content-${categoryKey}">
+                    <div class="skills-grid" id="grid-${categoryKey}"></div>
+                </div>
+            `;
+
+            // Add toggle functionality
+            section.querySelector('.category-header').addEventListener('click', function() {
+                this.classList.toggle('expanded');
+                const content = section.querySelector('.category-content');
+                content.classList.toggle('expanded');
+            });
+
+            // Add skill cards to grid
+            const grid = section.querySelector(`#grid-${categoryKey}`);
+            category.skills.forEach(skill => {
+                const card = createSkillCardElement(skill, categoryKey);
+                if (card) {
+                    grid.appendChild(card);
+                }
+            });
+
+            return section;
+        }
+
+        // Create skill card element
+        function createSkillCardElement(skillName, categoryKey) {
+            const skillId = `${categoryKey}-${skillName.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-')}`;
+            const skillData = userProgress[skillId] || { status: 'not-started', progress: 0 };
+            
+            // Apply filter
+            if (currentFilter !== 'all' && skillData.status !== currentFilter) {
+                return null;
+            }
+
+            const card = document.createElement('div');
+            card.className = `skill-card ${skillData.status === 'completed' ? 'completed' : skillData.status === 'in-progress' ? 'in-progress' : ''}`;
+            card.setAttribute('data-skill', skillId);
+            card.setAttribute('data-name', skillName);
+            card.setAttribute('data-category', categoryKey);
+            
+            card.innerHTML = `
+                <div class="skill-header">
+                    <div class="skill-name">${skillName}</div>
+                    <span class="skill-status status-${skillData.status}">
+                        ${skillData.status.replace('-', ' ')}
+                    </span>
+                </div>
+                <div class="skill-progress">
+                    <div class="skill-progress-bar">
+                        <div class="skill-progress-fill" style="width: ${skillData.progress}%"></div>
+                    </div>
+                </div>
+                <div class="skill-meta">
+                    <span>${skillData.progress}% Complete</span>
+                    <span>${skillData.lastUpdated || 'Not started'}</span>
+                </div>
+            `;
+
+            // Add click event listener
+            card.addEventListener('click', function() {
+                openSkillModal(skillId, skillName);
+            });
+
+            return card;
+        }
+
+        // Calculate category progress
+        function calculateCategoryProgress(skills, categoryKey) {
+            let totalProgress = 0;
+            let count = 0;
+            
+            skills.forEach(skill => {
+                const skillId = `${categoryKey}-${skill.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-')}`;
+                const skillData = userProgress[skillId];
+                if (skillData) {
+                    totalProgress += skillData.progress;
+                }
+                count++;
+            });
+            
+            return count > 0 ? Math.round(totalProgress / count) : 0;
+        }
+
+        // Filter skills based on search term
+        function filterSkills(searchTerm) {
+            const allCards = document.querySelectorAll('.skill-card');
+            allCards.forEach(card => {
+                const skillName = card.dataset.name.toLowerCase();
+                if (skillName.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Update overall statistics
+        function updateStats() {
+            let totalSkills = sequentialSkills.length;
+            let completedSkills = 0;
+            let totalProgress = 0;
+            
+            sequentialSkills.forEach(item => {
+                const skillId = `sequential-${item.skill.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-')}`;
+                const skillData = userProgress[skillId];
+                if (skillData) {
+                    if (skillData.status === 'completed') {
+                        completedSkills++;
+                    }
+                    totalProgress += skillData.progress;
+                }
+            });
+            
+            const overallProgress = totalSkills > 0 ? Math.round(totalProgress / totalSkills) : 0;
+            
+            document.getElementById('totalSkills').textContent = totalSkills;
+            document.getElementById('completedSkills').textContent = completedSkills;
+            document.getElementById('overallProgress').textContent = overallProgress + '%';
+        }
+
+        // Open skill modal
+        function openSkillModal(skillId, skillName) {
+            currentSkill = skillId;
+            const modal = document.getElementById('skillModal');
+            const skillData = userProgress[skillId] || { status: 'not-started', progress: 0, notes: '', lastUpdated: '' };
+            
+            document.getElementById('skillName').value = skillName;
+            document.getElementById('skillStatus').value = skillData.status;
+            document.getElementById('skillProgress').value = skillData.progress;
+            document.getElementById('progressValue').textContent = skillData.progress + '%';
+            document.getElementById('skillNotes').value = skillData.notes || '';
+            document.getElementById('lastUpdated').value = skillData.lastUpdated || new Date().toISOString().split('T')[0];
+            
+            modal.classList.add('active');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('skillModal').classList.remove('active');
+            currentSkill = null;
+        }
+
+        // Save skill progress
+        function saveSkillProgress() {
+            if (!currentSkill) return;
+            
+            const status = document.getElementById('skillStatus').value;
+            const progress = parseInt(document.getElementById('skillProgress').value);
+            const notes = document.getElementById('skillNotes').value;
+            const lastUpdated = document.getElementById('lastUpdated').value;
+            
+            userProgress[currentSkill] = {
+                status: status,
+                progress: progress,
+                notes: notes,
+                lastUpdated: lastUpdated
+            };
+            
+            localStorage.setItem('techSkillsProgress', JSON.stringify(userProgress));
+            
+            closeModal();
+            loadSkills();
+            updateStats();
+            
+            // Show success message
+            showNotification('Progress saved successfully!');
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(135deg, var(--success) 0%, var(--secondary) 100%);
+                color: white;
+                padding: 15px 30px;
+                border-radius: 10px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                z-index: 2000;
+                animation: slideUp 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Display learning roadmap
+        function displayRoadmap(container) {
+            container.innerHTML = `
+                <div style="padding: 20px;">
+                    <h2 style="margin-bottom: 30px; color: var(--dark);">📍 Interview-Focused Learning Roadmap</h2>
+                    
+                    <div style="display: grid; gap: 25px;">
+                        <div class="category-section" style="padding: 20px;">
+                            <h3 style="color: var(--primary); margin-bottom: 15px;">🎯 Week 1-4: Foundations</h3>
+                            <ul style="line-height: 2; color: var(--text);">
+                                <li>✅ Master Big O notation and complexity analysis</li>
+                                <li>✅ Implement all basic data structures from scratch</li>
+                                <li>✅ Practice array and string manipulation problems</li>
+                                <li>✅ Complete 50 Easy LeetCode problems</li>
+                                <li>✅ Setup GitHub with 1 quality project</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="category-section" style="padding: 20px;">
+                            <h3 style="color: var(--primary); margin-bottom: 15px;">💪 Week 5-8: Core Patterns</h3>
+                            <ul style="line-height: 2; color: var(--text);">
+                                <li>🎯 Master Two Pointers, Sliding Window, Fast & Slow</li>
+                                <li>🎯 Tree and Graph traversals (BFS, DFS)</li>
+                                <li>🎯 Binary Search variations</li>
+                                <li>🎯 Complete 75 Medium LeetCode problems</li>
+                                <li>🎯 Start behavioral story preparation (STAR method)</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="category-section" style="padding: 20px;">
+                            <h3 style="color: var(--primary); margin-bottom: 15px;">🚀 Week 9-12: Advanced Topics</h3>
+                            <ul style="line-height: 2; color: var(--text);">
+                                <li>🔥 Dynamic Programming patterns</li>
+                                <li>🔥 Backtracking and Graph algorithms</li>
+                                <li>🔥 System Design fundamentals</li>
+                                <li>🔥 Complete Blind 75 + NeetCode 150</li>
+                                <li>🔥 3-4 mock interviews</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="category-section" style="padding: 20px;">
+                            <h3 style="color: var(--primary); margin-bottom: 15px;">🏆 Week 13-16: Interview Ready</h3>
+                            <ul style="line-height: 2; color: var(--text);">
+                                <li>⭐ Design 8 common systems (Twitter, Uber, etc.)</li>
+                                <li>⭐ Polish 5-8 behavioral stories</li>
+                                <li>⭐ Company-specific preparation</li>
+                                <li>⭐ Daily practice: 2 LeetCode + 1 System Design</li>
+                                <li>⭐ Resume optimization and application strategy</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="category-section" style="padding: 20px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(34, 211, 238, 0.1) 100%);">
+                            <h3 style="color: var(--primary); margin-bottom: 15px;">🎯 Daily Routine for Success</h3>
+                            <ul style="line-height: 2; color: var(--text);">
+                                <li><strong>Morning (1 hour):</strong> 1-2 LeetCode problems</li>
+                                <li><strong>Afternoon (30 min):</strong> Review one core concept</li>
+                                <li><strong>Evening (30 min):</strong> System design or behavioral prep</li>
+                                <li><strong>Weekend:</strong> Mock interview + weak area review</li>
+                                <li><strong>Track Progress:</strong> Mark completed topics in this tracker!</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="category-section" style="padding: 20px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(251, 191, 36, 0.1) 100%);">
+                            <h3 style="color: var(--warning); margin-bottom: 15px;">⚡ Quick Win Resources</h3>
+                            <ul style="line-height: 2; color: var(--text);">
+                                <li><strong>LeetCode:</strong> Blind 75 → NeetCode 150 → Company tagged</li>
+                                <li><strong>System Design:</strong> Grokking → System Design Primer → Real examples</li>
+                                <li><strong>Behavioral:</strong> Write 8 stories covering all scenarios</li>
+                                <li><strong>Mock Interviews:</strong> Pramp, Interviewing.io, peers</li>
+                                <li><strong>Final Week:</strong> Review notes, no new topics, stay calm!</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Initialize app on load
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                init();
+            } catch(error) {
+                console.error('Initialization error:', error);
+            }
+        });
+    </script>
+</body>
+</html>
