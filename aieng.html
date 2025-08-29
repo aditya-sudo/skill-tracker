@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Roadmap: The Production-Ready AI Engineer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: The application is structured as a phased, interactive journey, directly reflecting the "roadmap" nature of the source report. This makes the user flow highly intuitive. A sticky top navigation allows users to jump between the four main phases. Instead of a dense wall of text, each phase uses interactive cards and diagrams. Users can click on topics to reveal details, preventing information overload and encouraging active exploration. This layered approach, combined with interactive elements like the MLOps lifecycle diagram and a skill distribution chart, transforms the static report into an engaging learning tool, making the path feel like a manageable and explorable quest. -->
+    <!-- Visualization & Content Choices: 
+        - Role Comparison (AI vs Data Scientist vs ML Eng): Goal: Compare. Method: Three-column card layout using HTML/Tailwind. Interaction: Subtle hover effects. Justification: Visually separates and clarifies distinct roles effectively.
+        - Foundational Skills (Math/CS): Goal: Organize & Inform. Method: Grid of clickable cards. Interaction: JS-powered modals/expandable sections reveal details. Justification: Breaks down dense topics into digestible, user-driven chunks.
+        - MLOps Lifecycle: Goal: Explain a process. Method: A circular flow diagram built with styled HTML/CSS. Interaction: Clicking a stage updates a central text panel with details. Justification: Visualizes the cyclical nature of MLOps better than a linear list.
+        - Skill Distribution: Goal: Inform (Summary). Method: Radar chart. Interaction: Tooltips on hover. Justification: Provides a quick, high-level visual summary of the multifaceted role. Library: Chart.js (Canvas).
+        - Cloud Platforms: Goal: Compare. Method: Tabbed interface for AWS, GCP, Azure. Interaction: Clicking tabs reveals platform-specific details. Justification: Organizes a large amount of comparative information cleanly.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFCFB;
+            color: #3D405B;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #8D5A4C;
+            transition: width 0.3s ease;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #8D5A4C;
+        }
+        .nav-link.active::after, .nav-link:hover::after {
+            width: 100%;
+        }
+        .phase-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .phase-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .modal-overlay {
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .mlops-node {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .mlops-node.active, .mlops-node:hover {
+            background-color: #8D5A4C;
+            color: #FDFCFB;
+            transform: scale(1.05);
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        .tab-button.active {
+            background-color: #8D5A4C;
+            color: #FDFCFB;
+            border-color: #8D5A4C;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-[#3D405B]">AI Engineer Roadmap</h1>
+            <div class="hidden md:flex space-x-8 font-medium">
+                <a href="#phase1" class="nav-link">Phase I: Foundations</a>
+                <a href="#phase2" class="nav-link">Phase II: Core Skills</a>
+                <a href="#phase3" class="nav-link">Phase III: MLOps</a>
+                <a href="#phase4" class="nav-link">Phase IV: Portfolio</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        <section class="text-center mb-20">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4">The Production-Ready AI Engineer</h2>
+            <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">An interactive guide to mastering the skills required to bridge the gap between algorithmic discovery and real-world value.</p>
+            <div class="mt-8">
+                <div class="chart-container">
+                    <canvas id="skillRadarChart"></canvas>
+                </div>
+                <p class="text-sm text-gray-500 mt-2">A visual representation of the balanced skillset of a modern AI Engineer.</p>
+            </div>
+        </section>
+
+        <section id="phase1" class="mb-20 pt-16">
+            <h3 class="text-3xl font-bold text-center mb-2"><span class="text-[#8D5A4C]">Phase I</span></h3>
+            <h4 class="text-4xl font-bold text-center mb-12">Building the Bedrock: Foundational Knowledge</h4>
+             <p class="text-lg text-gray-600 max-w-3xl mx-auto text-center mb-12">This initial phase is about building a solid foundation in the underlying principles of mathematics and computer science. This knowledge provides the essential intuition for why algorithms work, how to implement them efficiently, and how to debug them when they fail.</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-md phase-card">
+                    <h5 class="text-2xl font-bold mb-4">The Mathematical Toolkit</h5>
+                    <p class="text-gray-600 mb-6">Grasp the core concepts that form the language of data and optimization. The focus is on intuition over rote memorization.</p>
+                    <div class="space-y-4">
+                        <button onclick="openModal('linearAlgebra')" class="w-full text-left bg-stone-100 p-4 rounded-lg hover:bg-stone-200 transition"><strong>Linear Algebra:</strong> The Language of Data</button>
+                        <button onclick="openModal('calculus')" class="w-full text-left bg-stone-100 p-4 rounded-lg hover:bg-stone-200 transition"><strong>Calculus:</strong> The Engine of Optimization</button>
+                        <button onclick="openModal('probability')" class="w-full text-left bg-stone-100 p-4 rounded-lg hover:bg-stone-200 transition"><strong>Probability & Statistics:</strong> Managing Uncertainty</button>
+                    </div>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-md phase-card">
+                    <h5 class="text-2xl font-bold mb-4">Computer Science & Programming</h5>
+                    <p class="text-gray-600 mb-6">Master the practical skills to bring AI models to life by building robust, maintainable, and efficient software.</p>
+                    <div class="space-y-4">
+                        <button onclick="openModal('python')" class="w-full text-left bg-stone-100 p-4 rounded-lg hover:bg-stone-200 transition"><strong>Python Proficiency:</strong> The Lingua Franca of AI</button>
+                        <button onclick="openModal('softwareEng')" class="w-full text-left bg-stone-100 p-4 rounded-lg hover:bg-stone-200 transition"><strong>Software Engineering Principles:</strong> Building Professional-Grade Systems</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="phase2" class="mb-20 pt-16">
+            <h3 class="text-3xl font-bold text-center mb-2"><span class="text-[#8D5A4C]">Phase II</span></h3>
+            <h4 class="text-4xl font-bold text-center mb-12">Mastering the Craft: Core AI/ML Competencies</h4>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto text-center mb-12">With a solid foundation, this phase focuses on mastering the core tools and techniques of machine learning. You'll move from theory to practice, learning the spectrum of classical and modern algorithms to choose the right tool for any problem.</p>
+            <div class="grid md:grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-md phase-card">
+                    <h5 class="text-xl font-bold mb-3">The Practitioner's Python Stack</h5>
+                    <p class="text-sm text-gray-600 mb-4">Deep, hands-on expertise with the libraries that form the foundation of nearly every ML project.</p>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li><strong>NumPy:</strong> For efficient numerical computation.</li>
+                        <li><strong>Pandas:</strong> For data manipulation and analysis.</li>
+                        <li><strong>Scikit-learn:</strong> For classical machine learning algorithms.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md phase-card">
+                    <h5 class="text-xl font-bold mb-3">Classical Machine Learning</h5>
+                    <p class="text-sm text-gray-600 mb-4">Master interpretable, efficient models that are the workhorses for a wide variety of common business tasks.</p>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li><strong>Supervised Learning:</strong> Regression & Classification.</li>
+                        <li><strong>Unsupervised Learning:</strong> Clustering & Dimensionality Reduction.</li>
+                        <li><strong>Model Evaluation:</strong> Bias-Variance, Cross-Validation, Metrics.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md phase-card">
+                    <h5 class="text-xl font-bold mb-3">Deep Learning Architectures</h5>
+                    <p class="text-sm text-gray-600 mb-4">Learn the powerful neural network architectures driving modern AI breakthroughs.</p>
+                     <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li><strong>Core Frameworks:</strong> PyTorch & TensorFlow.</li>
+                        <li><strong>CNNs:</strong> For computer vision tasks.</li>
+                        <li><strong>Transformers:</strong> The engine of Generative AI.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="phase3" class="mb-20 pt-16">
+            <h3 class="text-3xl font-bold text-center mb-2"><span class="text-[#8D5A4C]">Phase III</span></h3>
+            <h4 class="text-4xl font-bold text-center mb-12">The Production Gauntlet: Engineering for Scale (MLOps)</h4>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto text-center mb-12">This is the critical transition from building models to engineering production-grade AI systems. Mastering MLOps means learning to automate and streamline the entire machine learning lifecycle for reliability and scalability.</p>
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                <h5 class="text-2xl font-bold text-center mb-8">The Interactive MLOps Lifecycle</h5>
+                <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div class="w-full md:w-2/5 flex flex-col items-center justify-center space-y-4">
+                        <div id="mlops-node-1" class="mlops-node active w-48 text-center p-4 rounded-lg border-2 border-stone-300" onclick="selectMlopsStage(1)">1. Design & Experiment</div>
+                        <div class="text-2xl text-stone-400">↓</div>
+                        <div id="mlops-node-2" class="mlops-node w-48 text-center p-4 rounded-lg border-2 border-stone-300" onclick="selectMlopsStage(2)">2. Pipeline Automation</div>
+                        <div class="text-2xl text-stone-400">↓</div>
+                        <div id="mlops-node-3" class="mlops-node w-48 text-center p-4 rounded-lg border-2 border-stone-300" onclick="selectMlopsStage(3)">3. Deployment & Serving</div>
+                        <div class="text-2xl text-stone-400">↓</div>
+                        <div id="mlops-node-4" class="mlops-node w-48 text-center p-4 rounded-lg border-2 border-stone-300" onclick="selectMlopsStage(4)">4. Monitoring & Governance</div>
+                    </div>
+                    <div class="w-full md:w-3/5 bg-stone-50 p-6 rounded-lg min-h-[300px]">
+                        <div id="mlops-content"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-12">
+                 <h5 class="text-2xl font-bold text-center mb-8">Mastering the Cloud AI Ecosystem</h5>
+                 <div class="bg-white rounded-xl shadow-lg p-8">
+                     <div class="border-b border-gray-200 mb-4">
+                         <nav class="-mb-px flex space-x-6" aria-label="Tabs">
+                             <button id="tab-aws" class="tab-button active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" onclick="selectCloudTab('aws')">Amazon Web Services</button>
+                             <button id="tab-gcp" class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" onclick="selectCloudTab('gcp')">Google Cloud Platform</button>
+                             <button id="tab-azure" class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" onclick="selectCloudTab('azure')">Microsoft Azure</button>
+                         </nav>
+                     </div>
+                     <div id="cloud-content"></div>
+                 </div>
+            </div>
+        </section>
+
+        <section id="phase4" class="pt-16">
+            <h3 class="text-3xl font-bold text-center mb-2"><span class="text-[#8D5A4C]">Phase IV</span></h3>
+            <h4 class="text-4xl font-bold text-center mb-12">Proving Your Mettle: Building a Standout Portfolio</h4>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto text-center mb-12">Knowledge must be applied. This final phase is about creating tangible assets that demonstrate your end-to-end engineering capabilities. A production-oriented portfolio is the single most important factor in securing a top AI engineering role.</p>
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                <h5 class="text-2xl font-bold mb-6 text-center">Blueprint for a Production-Oriented Project</h5>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+                    <div class="bg-stone-50 p-4 rounded-lg">
+                        <div class="text-3xl mb-2">1️⃣</div>
+                        <h6 class="font-bold">Problem & Data</h6>
+                        <p class="text-sm text-gray-600">Define a problem and collect data via API or scraping.</p>
+                    </div>
+                    <div class="bg-stone-50 p-4 rounded-lg">
+                        <div class="text-3xl mb-2">2️⃣</div>
+                        <h6 class="font-bold">Model & API</h6>
+                        <p class="text-sm text-gray-600">Train a model and wrap it in a FastAPI/Flask web API.</p>
+                    </div>
+                    <div class="bg-stone-50 p-4 rounded-lg">
+                        <div class="text-3xl mb-2">3️⃣</div>
+                        <h6 class="font-bold">Containerize & Deploy</h6>
+                        <p class="text-sm text-gray-600">Package with Docker and deploy to a cloud service.</p>
+                    </div>
+                    <div class="bg-stone-50 p-4 rounded-lg">
+                        <div class="text-3xl mb-2">4️⃣</div>
+                        <h6 class="font-bold">Automate (CI/CD)</h6>
+                        <p class="text-sm text-gray-600">Create a GitHub Actions pipeline for automated deployment.</p>
+                    </div>
+                </div>
+                 <div class="mt-8 text-center bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg">
+                    <p class="font-medium"><strong>Key Takeaway:</strong> A deployed, automated microservice, even with a simple model, is far more impressive to hiring managers than a complex model that only exists in a notebook.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-white mt-20 border-t">
+        <div class="container mx-auto px-6 py-8 text-center text-gray-500">
+            <p>Interactive AI Engineer Roadmap | Designed to bring clarity to a complex field.</p>
+        </div>
+    </footer>
+
+    <div id="modal" class="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden opacity-0 z-50">
+        <div class="modal-content bg-white rounded-xl shadow-2xl w-full max-w-2xl p-8 transform scale-95">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modal-title" class="text-2xl font-bold"></h3>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+            </div>
+            <div id="modal-body" class="text-gray-600 space-y-4"></div>
+        </div>
+    </div>
+    
+    <script>
+        const modalData = {
+            linearAlgebra: {
+                title: 'Linear Algebra: The Language of Data',
+                content: `
+                    <p>At its core, machine learning is about manipulating data, which is ultimately represented as numerical arrays. Linear algebra provides the language and tools for these manipulations.</p>
+                    <ul class="list-disc list-inside space-y-2 mt-4">
+                        <li><strong>Vectors & Matrices:</strong> The fundamental data structures for representing data points and entire datasets.</li>
+                        <li><strong>Matrix Operations:</strong> Operations like matrix multiplication are the computational heart of deep learning, transforming data through neural network layers.</li>
+                        <li><strong>Eigenvalues & Eigenvectors:</strong> Crucial for dimensionality reduction techniques like Principal Component Analysis (PCA).</li>
+                    </ul>
+                `
+            },
+            calculus: {
+                title: 'Calculus: The Engine of Optimization',
+                content: `
+                    <p>Machine learning models "learn" by minimizing an error or "loss" function. Differential calculus provides the mechanism to perform this optimization efficiently.</p>
+                    <ul class="list-disc list-inside space-y-2 mt-4">
+                        <li><strong>Derivatives & Gradients:</strong> The gradient points in the direction of steepest ascent of the loss function. By moving in the opposite direction, a model finds the minimum error.</li>
+                        <li><strong>Gradient Descent:</strong> The cornerstone algorithm for training most ML models, using gradients to systematically update model parameters to minimize loss.</li>
+                        <li><strong>The Chain Rule:</strong> Used in backpropagation to calculate gradients for each layer in a deep neural network, which is fundamental to how they are trained.</li>
+                    </ul>
+                `
+            },
+            probability: {
+                title: 'Probability & Statistics: Managing Uncertainty',
+                content: `
+                    <p>AI models operate in a world of uncertainty. This toolkit provides the framework for quantifying this uncertainty, making predictions, and evaluating model performance.</p>
+                    <ul class="list-disc list-inside space-y-2 mt-4">
+                        <li><strong>Probability Distributions:</strong> Used to model the likelihood of different outcomes (e.g., Gaussian/Normal distribution).</li>
+                        <li><strong>Key Concepts:</strong> Conditional probability, independence, and Bayes' Theorem are fundamental for many algorithms.</li>
+                        <li><strong>Statistical Methods:</strong> Techniques like hypothesis testing and confidence intervals are critical for evaluating the statistical significance of model results.</li>
+                    </ul>
+                `
+            },
+            python: {
+                title: 'Python Proficiency: The Lingua Franca of AI',
+                content: `
+                    <p>Python is the dominant language for AI due to its simplicity and vast ecosystem of powerful libraries. Proficiency must go beyond basic scripting.</p>
+                    <ul class="list-disc list-inside space-y-2 mt-4">
+                        <li><strong>Data Structures & Algorithms:</strong> Essential for writing efficient code that can handle large-scale data and complex computations.</li>
+                        <li><strong>Object-Oriented Programming (OOP):</strong> Crucial for building modular, reusable, and maintainable code in large, production-grade AI applications.</li>
+                    </ul>
+                `
+            },
+            softwareEng: {
+                title: 'Software Engineering Principles',
+                content: `
+                    <p>These principles distinguish a professional engineer from a hobbyist. A production-ready engineer must internalize best practices for building robust software.</p>
+                    <ul class="list-disc list-inside space-y-2 mt-4">
+                        <li><strong>Version Control with Git:</strong> The non-negotiable industry standard for tracking changes and collaborating on a codebase.</li>
+                        <li><strong>Clean & Maintainable Code:</strong> Writing code that is readable, well-documented, and easy to extend is critical for long-term project success.</li>
+                        <li><strong>Testing:</strong> Implementing unit and integration tests is vital for ensuring the reliability and correctness of AI systems.</li>
+                        <li><strong>Agile Methodologies:</strong> Familiarity with practices like Scrum or Kanban for managing complex projects.</li>
+                    </ul>
+                `
+            }
+        };
+
+        const mlopsData = {
+            1: {
+                title: '1. Design & Experimentation',
+                content: `
+                    <p class="mb-4">This initial phase aligns the AI project with business objectives. It involves defining the problem, collecting and cleaning data, and prototyping various models to establish a proof of concept (PoC).</p>
+                    <strong class="block mb-2">Key Activities:</strong>
+                    <ul class="list-disc list-inside space-y-1 text-sm">
+                        <li>Problem Formulation</li>
+                        <li>Data Sourcing & Labeling</li>
+                        <li>Exploratory Data Analysis (EDA)</li>
+                        <li>Model Prototyping & Feasibility</li>
+                    </ul>
+                `
+            },
+            2: {
+                title: '2. Pipeline Automation',
+                content: `
+                    <p class="mb-4">The goal here is to move from manual scripts to automated, repeatable workflows for data preprocessing, model training, and evaluation. This ensures consistency and reproducibility.</p>
+                    <strong class="block mb-2">Key Tools & Concepts:</strong>
+                    <ul class="list-disc list-inside space-y-1 text-sm">
+                        <li>Workflow Orchestrators (e.g., Airflow, Kubeflow)</li>
+                        <li>Data Versioning (DVC)</li>
+                        <li>Feature Stores</li>
+                        <li>Automated Training & Evaluation Scripts</li>
+                    </ul>
+                `
+            },
+            3: {
+                title: '3. Deployment & Serving',
+                content: `
+                    <p class="mb-4">Once a model is validated, it must be deployed to be consumed by applications. This phase focuses on making the model accessible, reliable, and scalable to handle production traffic.</p>
+                    <strong class="block mb-2">Common Patterns:</strong>
+                    <ul class="list-disc list-inside space-y-1 text-sm">
+                        <li>Real-time Inference via REST APIs (FastAPI, Flask)</li>
+                        <li>Batch Predictions for offline tasks</li>
+                        <li>Containerization with Docker</li>
+                        <li>Orchestration with Kubernetes (K8s)</li>
+                    </ul>
+                `
+            },
+            4: {
+                title: '4. Monitoring & Governance',
+                content: `
+                    <p class="mb-4">A deployed model requires continuous oversight. This involves monitoring its performance, tracking operational metrics, and detecting issues like data drift to maintain accuracy and relevance.</p>
+                    <strong class="block mb-2">Key Focus Areas:</strong>
+                    <ul class="list-disc list-inside space-y-1 text-sm">
+                        <li>Performance Monitoring (Accuracy, Precision, Recall)</li>
+                        <li>Data Drift & Concept Drift Detection</li>
+                        <li>Operational Health (Latency, CPU/GPU Usage)</li>
+                        <li>Automated Retraining Triggers</li>
+                        <li>Model Fairness & Bias Audits</li>
+                    </ul>
+                `
+            }
+        };
+
+        const cloudData = {
+            aws: {
+                title: 'Amazon Web Services (AWS)',
+                content: `
+                    <p class="mb-4">AWS offers <strong>Amazon SageMaker</strong>, a comprehensive and modular suite of tools covering the entire ML lifecycle. Its strength lies in its breadth of features, allowing teams to pick and choose the components they need.</p>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li><strong>Managed Platform:</strong> Amazon SageMaker (Studio, Pipelines, Feature Store).</li>
+                        <li><strong>Generative AI:</strong> Amazon Bedrock provides access to various foundation models (e.g., from Anthropic, Meta) via a single API.</li>
+                        <li><strong>Specialized Hardware:</strong> Custom AWS Trainium (training) and Inferentia (inference) chips.</li>
+                        <li><strong>Integration:</strong> Strong ties to Amazon S3 and Redshift for data storage and warehousing.</li>
+                    </ul>
+                `
+            },
+            gcp: {
+                title: 'Google Cloud Platform (GCP)',
+                content: `
+                    <p class="mb-4">GCP's <strong>Vertex AI</strong> is a unified ML platform known for its tight integration, access to Google's cutting-edge research, and powerful custom hardware for large-scale deep learning.</p>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li><strong>Managed Platform:</strong> Vertex AI (Workbench, Pipelines, Model Garden).</li>
+                        <li><strong>Generative AI:</strong> Provides access to Google's powerful, multimodal Gemini family of models, deeply integrated into Vertex AI.</li>
+                        <li><strong>Specialized Hardware:</strong> Tensor Processing Units (TPUs) provide exceptional performance for large-scale model training.</li>
+                        <li><strong>Integration:</strong> Standout feature is BigQuery ML, allowing model building directly within the data warehouse using SQL.</li>
+                    </ul>
+                `
+            },
+            azure: {
+                title: 'Microsoft Azure',
+                content: `
+                    <p class="mb-4"><strong>Azure Machine Learning</strong> is an enterprise-grade service with a user-friendly visual interface, strong integration with the Microsoft ecosystem, and a focus on responsible AI and governance.</p>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li><strong>Managed Platform:</strong> Azure Machine Learning Studio.</li>
+                        <li><strong>Generative AI:</strong> The <strong>Azure OpenAI Service</strong> offers exclusive, secure API access to OpenAI's most advanced models, including GPT-4.</li>
+                        <li><strong>Specialized Hardware:</strong> Offers a range of powerful NVIDIA GPU instances and FPGAs.</li>
+                        <li><strong>Integration:</strong> Seamlessly connects with Azure Synapse Analytics and Power BI for end-to-end enterprise solutions.</li>
+                    </ul>
+                `
+            }
+        };
+
+        const modal = document.getElementById('modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+
+        function openModal(id) {
+            const data = modalData[id];
+            if (data) {
+                modalTitle.innerText = data.title;
+                modalBody.innerHTML = data.content;
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    modal.querySelector('.modal-content').classList.remove('scale-95');
+                }, 10);
+            }
+        }
+
+        function closeModal() {
+            modal.classList.add('opacity-0');
+            modal.querySelector('.modal-content').classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function selectMlopsStage(stage) {
+            document.querySelectorAll('.mlops-node').forEach(node => node.classList.remove('active'));
+            document.getElementById(`mlops-node-${stage}`).classList.add('active');
+            const contentDiv = document.getElementById('mlops-content');
+            const data = mlopsData[stage];
+            contentDiv.innerHTML = `<h4 class="text-xl font-bold mb-2">${data.title}</h4>${data.content}`;
+        }
+
+        function selectCloudTab(platform) {
+            document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+            document.getElementById(`tab-${platform}`).classList.add('active');
+            const contentDiv = document.getElementById('cloud-content');
+            const data = cloudData[platform];
+            contentDiv.innerHTML = `<h4 class="text-xl font-bold mb-2">${data.title}</h4>${data.content}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            selectMlopsStage(1);
+            selectCloudTab('aws');
+
+            const radarCtx = document.getElementById('skillRadarChart').getContext('2d');
+            new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels: [
+                        'Software Engineering', 
+                        'MLOps & Deployment', 
+                        'Core ML/DL Theory', 
+                        'Math & Statistics', 
+                        'Data Engineering', 
+                        'Business Acumen'
+                    ],
+                    datasets: [{
+                        label: 'Required Skill Level',
+                        data: [9, 10, 8, 7, 8, 6],
+                        backgroundColor: 'rgba(141, 90, 76, 0.2)',
+                        borderColor: 'rgba(141, 90, 76, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(141, 90, 76, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(141, 90, 76, 1)'
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(61, 64, 91, 0.2)' },
+                            grid: { color: 'rgba(61, 64, 91, 0.2)' },
+                            pointLabels: {
+                                font: { size: 12, weight: '500' },
+                                color: '#3D405B'
+                            },
+                            ticks: {
+                                backdropColor: '#FDFCFB',
+                                color: '#7a7a7a',
+                                stepSize: 2
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 10
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.r !== null) {
+                                        label += context.parsed.r;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section[id]');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 100) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
